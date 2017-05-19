@@ -43,12 +43,12 @@ public class GameServer
                  @Override
                  public void initChannel(SocketChannel ch) throws Exception {
                 	 ch.pipeline().addLast(new LoggingHandler(LogLevel.ERROR));
-                	 ch.pipeline().addLast(new ReadTimeoutHandler(600));
+                	 //ch.pipeline().addLast(new ReadTimeoutHandler(600));
                 	 ch.pipeline().addLast(new MessageDecoder(1024 * 1024 * 10, 0, 4));
                 	 ch.pipeline().addLast(new MessageEncoder());
                 	 ch.pipeline().addLast(new LoginAuthRespHandler());
                      ch.pipeline().addLast(new GameServerHandler());
-                     ch.pipeline().addLast(new HeartBeatRespHandler());
+                     //ch.pipeline().addLast(new HeartBeatRespHandler());
                  }
              })
              .option(ChannelOption.SO_BACKLOG, 128)          // (5)

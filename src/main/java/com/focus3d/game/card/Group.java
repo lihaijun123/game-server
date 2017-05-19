@@ -14,6 +14,11 @@ public class Group {
 	private Long id;
 	private String name;
 	private List<User> userList = new ArrayList<User>();
+	private Card card;
+	public Group(Long id, String name){
+		this.id = id;
+		this.name = name;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -46,5 +51,14 @@ public class Group {
 		}
 		return false;
 	}
-	
+	@Override
+	public String toString() {
+		return getId() + "," + getName();
+	}
+	public Card getCard() {
+		return card;
+	}
+	public void setCard(Card card) {
+		this.card = card;
+	}
 }

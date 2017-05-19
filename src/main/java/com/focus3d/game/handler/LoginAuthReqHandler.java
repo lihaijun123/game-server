@@ -58,7 +58,7 @@ public class LoginAuthReqHandler extends ChannelInboundHandlerAdapter {
 		GameMessage message = new GameMessage();
 		message.getHeader().setType((byte)MessageType.LOGIN_REQ.getType());
 		JSONObject jo = new JSONObject();
-		jo.put("userName", "admin");
+		jo.put("username", "admin");
 		jo.put("password", "test");
 		message.setBody(jo);
 		return message;

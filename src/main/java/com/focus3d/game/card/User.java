@@ -9,15 +9,14 @@ import io.netty.channel.Channel;
  *
  */
 public class User {
-
 	private Long id;
 	private String name;
-	private Card card;
 	private Channel channel;
 	private String loginUserName;
 	private String loginPassword;
 	
-	public User(String name, String loginUserName, String loginPassword){
+	public User(Long id, String name, String loginUserName, String loginPassword){
+		this.id = id;
 		this.name = name;
 		this.loginUserName = loginUserName;
 		this.loginPassword = loginPassword;
@@ -33,12 +32,6 @@ public class User {
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	public Card getCard() {
-		return card;
-	}
-	public void setCard(Card card) {
-		this.card = card;
 	}
 	public Channel getChannel() {
 		return channel;
@@ -71,6 +64,10 @@ public class User {
 	}
 	public void setLoginPassword(String loginPassword) {
 		this.loginPassword = loginPassword;
+	}
+	@Override
+	public String toString() {
+		return getId().toString();
 	}
 	
 	

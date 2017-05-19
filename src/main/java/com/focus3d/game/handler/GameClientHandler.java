@@ -13,6 +13,8 @@ public class GameClientHandler extends ChannelInboundHandlerAdapter {
        if(message.getHeader().getType() == MessageType.BUSINESS_RESP.getType()){
     	   //业务处理
     	   System.out.println("服务器业务响应->" + msg.toString());
+       } else if(message.getHeader().getType() == MessageType.CARD_GET_RESP.getType()){
+    	   System.out.println("服务器业务响应->" + msg.toString());
        } else {
     	   ctx.fireChannelRead(msg);
        }

@@ -19,7 +19,7 @@ public class Card {
 	//定义数组存储牌的花色  
 	private static String[] colors = {"1","2","3","4"};//1-红桃,2-黑桃,3-方块,4-棉花
 	//定义数组存储牌的号
-	private static String[] numbers = {"3","4","5","6","7","8","9","10","J","Q","K","A","2"};  
+	private static String[] numbers = {"3","4","5","6","7","8","9","10","11","12","13","14","15"};  
 	
 	public static void main(String[] args) {  
 		Card poker = new Card();
@@ -48,35 +48,35 @@ public class Card {
                 index++;
             }  
         }/* * 将小王和大王存储到hm中 */  
-        cardMap.put(index, "0_w");//小王
+        cardMap.put(index, "0_16");//小王
         cardIndexList.add(index);  
         index++;  
-        cardMap.put(index, "0_W");//大王  
+        cardMap.put(index, "0_17");//大王  
         cardIndexList.add(index);  
         //打乱顺序  
         Collections.shuffle(cardIndexList);    
         /* * 定义四个TreeSet集合的变量用于存储底牌编号以及三个玩家的牌的编号 * 采用TreeSet集合是因为TreeSet集合可以实现自然排序 */  
-        TreeSet<Integer> one = new TreeSet<Integer>();  
-        TreeSet<Integer> two = new TreeSet<Integer>();  
-        TreeSet<Integer> three = new TreeSet<Integer>();   
-        TreeSet<Integer> dipai = new TreeSet<Integer>();  
+        TreeSet<Integer> ply_1 = new TreeSet<Integer>();  
+        TreeSet<Integer> ply_2 = new TreeSet<Integer>();  
+        TreeSet<Integer> ply_3 = new TreeSet<Integer>();   
+        TreeSet<Integer> dp = new TreeSet<Integer>();  
         //遍历编号的集合，实现发牌  
         for(int x = 0; x < cardIndexList.size(); x++){  
             if(x >= cardIndexList.size() - 3){  
-                dipai.add(cardIndexList.get(x));  
+                dp.add(cardIndexList.get(x));  
             } else if( x % 3 == 0){ 
-            	one.add(cardIndexList.get(x));  
+            	ply_1.add(cardIndexList.get(x));  
             } else if(x % 3 == 1){  
-            	two.add(cardIndexList.get(x));  
+            	ply_2.add(cardIndexList.get(x));  
             } else if(x % 3 == 2){  
-            	three.add(cardIndexList.get(x));
+            	ply_3.add(cardIndexList.get(x));
             }  
         }  
         Map<String, String> result = new HashMap<String, String>();
-        result.put("dp", getCardGroup(dipai,cardMap));
-        result.put("one", getCardGroup(one, cardMap));
-        result.put("two", getCardGroup(two, cardMap));
-        result.put("three", getCardGroup(three, cardMap));
+        result.put("dp", getCardGroup(dp,cardMap));
+        result.put("ply_1", getCardGroup(ply_1, cardMap));
+        result.put("ply_2", getCardGroup(ply_2, cardMap));
+        result.put("ply_3", getCardGroup(ply_3, cardMap));
         return result;
 	}  
 	/**

@@ -41,8 +41,8 @@ public class GameClient {
 	
 	public void sendData(){
 		JSONObject bodyJo = new JSONObject();
-		bodyJo.put("age", 30);
-		bodyJo.put("name", "数据包测试");
+		bodyJo.put("username", "admin");
+		bodyJo.put("password", "test");
 		int sessionId = (new Random()).nextInt(1000000);
 		while(channel == null || !channel.isActive()){
 			
@@ -52,7 +52,7 @@ public class GameClient {
 				bodyJo.put("id", (new Random()).nextInt(1000));
 				GameMessage msg = new GameMessage();
 				msg.getHeader().setSessionID(sessionId);
-				msg.getHeader().setType((byte)0);
+				msg.getHeader().setType((byte)7);
 				msg.setBody(bodyJo);
 				System.out.println("client send data:" + msg);
 				channel.writeAndFlush(msg);
@@ -76,7 +76,7 @@ public class GameClient {
 	                	ch.pipeline().addLast(new MessageEncoder());
 	                	ch.pipeline().addLast(new LoginAuthReqHandler(GameClient.this));
 	                	ch.pipeline().addLast(new GameClientHandler());
-	                	ch.pipeline().addLast(new HeartBeatReqHandler(GameClient.this));
+	                	//ch.pipeline().addLast(new HeartBeatReqHandler(GameClient.this));
 	                }
 	            });
 	           doConnect(host, port);

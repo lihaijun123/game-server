@@ -70,7 +70,7 @@ public class GameServer
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);
         } else {
-            port = 8080;
+            port = 8877;
         }
         new GameServer(port).run();
     }

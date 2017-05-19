@@ -1,12 +1,20 @@
 package com.focus3d.game.handler;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import net.sf.json.JSONObject;
 
+import com.focus3d.game.card.User;
+import com.focus3d.game.card.database.UserDB;
 import com.focus3d.game.constant.MessageType;
 import com.focus3d.game.game.protocal.GameMessage;
-
+/**
+ * 登录验证
+ * *
+ * @author lihaijun
+ *
+ */
 public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
@@ -17,13 +25,15 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 			JSONObject jo = JSONObject.fromObject(body);
 			String userName = "";
 			String password = "";
-			if(jo.containsKey("userName")){
-				userName = jo.getString("userName");
+			if(jo.containsKey("username")){
+				userName = jo.getString("username");
 			}
 			if(jo.containsKey("password")){
 				password = jo.getString("password");
 			}
-			if(userName.equals("admin") && "test".equals(password)){
+			User user = UserDB.select(userName, password);
+			if(user != null){
+				//新建组
 				ctx.writeAndFlush(buildLoginResp(0));
 			} else {
 				ctx.writeAndFlush(buildLoginResp(-1));
@@ -37,7 +47,10 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		System.out.println(ctx.channel().remoteAddress().toString() + ">> connect.");
+		Channel channel = ctx.channel();
+		String log = channel.remoteAddress().toString() + ">> connect.";
+		System.out.println(log);
+		//channel.writeAndFlush(buildLoginResp(3));
 	}
 
 

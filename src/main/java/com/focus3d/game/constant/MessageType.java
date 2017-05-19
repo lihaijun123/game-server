@@ -6,7 +6,9 @@ public enum MessageType {
 	LOGIN_REQ(3, "握手请求消息"),
 	LOGIN_RESP(4, "握手响应消息"),
 	HEARTBEAT_REQ(5, "心跳请求消息"),
-    HEARTBEAT_RESP(6, "心跳响应消息");
+    HEARTBEAT_RESP(6, "心跳响应消息"),
+	CARD_GET_REQ(7, "请求发牌消息"),
+	CARD_GET_RESP(8, "发牌响应消息");
     int type;
 	String name;
 	MessageType(int type, String name){

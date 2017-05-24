@@ -14,6 +14,7 @@ public class User {
 	private Channel channel;
 	private String loginUserName;
 	private String loginPassword;
+	private Integer sex = 1;//0-女 1-男
 	
 	public User(Long id, String name, String loginUserName, String loginPassword){
 		this.id = id;
@@ -69,6 +70,10 @@ public class User {
 	public String toString() {
 		return getId().toString();
 	}
-	
-	
+	public Integer getSex() {
+		return sex;
+	}
+	public void setSex(Integer sex) {
+		this.sex = sex;
+	}
 }

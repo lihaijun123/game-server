@@ -13,7 +13,8 @@ public class Test extends Thread{
 	@Override
 	public void run() {
 		GameClient client = new GameClient();
-		client.start("172.17.13.77", 8877);
+		client.start("172.17.13.77", 8787);
+		//client.start("121.196.221.18", 8787);
 		while(!client.isLogin){
 		}
 		client.sendData();

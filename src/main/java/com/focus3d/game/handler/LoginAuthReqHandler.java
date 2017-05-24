@@ -32,8 +32,8 @@ public class LoginAuthReqHandler extends ChannelInboundHandlerAdapter {
 		if(msg != null && message.getHeader().getType() == MessageType.LOGIN_RESP.getType()){
 			Object body = message.getBody();
 			JSONObject jo = JSONObject.fromObject(body);
-			if(jo.containsKey("loginStatus")){
-				int status = jo.getInt("loginStatus");
+			if(jo.containsKey("status")){
+				int status = jo.getInt("status");
 				if(0 == status){
 					System.out.println("login is ok:" + message);
 					gameClient.isLogin = true;
@@ -43,7 +43,10 @@ public class LoginAuthReqHandler extends ChannelInboundHandlerAdapter {
 					System.out.println("握手失败，关闭连接");
 				}
 			}
-		} else {
+		} else if(msg != null && message.getHeader().getType() == MessageType.USER_JOIN_RESP.getType()){
+			System.out.println("other user join in :" + message);
+		}
+		else {
 			ctx.fireChannelRead(msg);
 		}
 	}
@@ -59,7 +62,7 @@ public class LoginAuthReqHandler extends ChannelInboundHandlerAdapter {
 		message.getHeader().setType((byte)MessageType.LOGIN_REQ.getType());
 		JSONObject jo = new JSONObject();
 		jo.put("username", "admin");
-		jo.put("password", "test");
+		jo.put("password", "test2");
 		message.setBody(jo);
 		return message;
 	}

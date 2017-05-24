@@ -11,12 +11,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.timeout.ReadTimeoutHandler;
 
 import com.focus3d.game.codec.MessageDecoder;
 import com.focus3d.game.codec.MessageEncoder;
 import com.focus3d.game.handler.GameServerHandler;
-import com.focus3d.game.handler.HeartBeatRespHandler;
 import com.focus3d.game.handler.LoginAuthRespHandler;
 
 /**

@@ -13,13 +13,14 @@ import java.util.TreeSet;
  */
 public class Card {
 	//定义HashMap变量用于存储每张排的编号以及牌型  
-	private static HashMap<Integer,String> cardMap = new HashMap<Integer,String>();   
+	private  HashMap<Integer,String> cardMap = new HashMap<Integer,String>();   
 	//定义ArrayList变量存储牌的编号  
-	private static ArrayList<Integer> cardIndexList = new ArrayList<Integer>();  
+	private  ArrayList<Integer> cardIndexList = new ArrayList<Integer>();  
 	//定义数组存储牌的花色  
 	private static String[] colors = {"1","2","3","4"};//1-红桃,2-黑桃,3-方块,4-棉花
 	//定义数组存储牌的号
-	private static String[] numbers = {"3","4","5","6","7","8","9","10","11","12","13","14","15"};  
+	//private static String[] numbers = {"3","4","5","6","7","8","9","10","11","12","13","14","15"};  
+	private static String[] numbers = {"10","11","12","13","14","15"};  
 	
 	public static void main(String[] args) {  
 		Card poker = new Card();
@@ -28,6 +29,7 @@ public class Card {
 			System.out.println(c.getValue());
 		}
 	}
+
 	/**
 	 * 洗牌
 	 * *

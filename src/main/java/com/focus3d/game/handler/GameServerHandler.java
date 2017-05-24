@@ -55,7 +55,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 					Map<String, String> shuffleCards = card.ShuffleCards();
 					String dp = shuffleCards.get("dp");
 					
-					for(int i = 0; i <userList.size(); i ++){
+					for(int i = 0; i < userList.size(); i ++){
 						User user = userList.get(i);
 						JSONObject jo = new JSONObject();
 						jo.put("card", shuffleCards.get("ply_" + (i + 1)));

@@ -13,6 +13,8 @@ public class User {
 	private String name;
 	private Channel channel;
 	private Integer sex = 1;//0-女 1-男
+	private Card card;
+	private Card bootomCard;
 	
 	public User(Long id, String name){
 		this.id = id;
@@ -62,4 +64,21 @@ public class User {
 	public void setSex(Integer sex) {
 		this.sex = sex;
 	}
+
+	public Card getCard() {
+		return card;
+	}
+
+	public void setCard(Card card) {
+		this.card = card;
+	}
+
+	public Card getBootomCard() {
+		return bootomCard;
+	}
+
+	public void setBootomCard(Card bootomCard) {
+		this.bootomCard = bootomCard;
+	}
+	
 }

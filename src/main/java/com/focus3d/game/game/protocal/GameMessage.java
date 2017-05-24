@@ -1,5 +1,10 @@
 package com.focus3d.game.game.protocal;
-
+/**
+ * 消息协议
+ * *
+ * @author lihaijun
+ *
+ */
 public class GameMessage {
 	private Header header = new Header();
 	private Object body;
@@ -17,6 +22,6 @@ public class GameMessage {
 	}
 	@Override
 	public String toString() {
-		return "header:" + header.toString() + (body != null ? ",body:" + body.toString() : "");
+		return "header-[" + header.toString() + "]" + "#body-[" + (body != null ? body.toString() : "") + "]";
 	}
 }

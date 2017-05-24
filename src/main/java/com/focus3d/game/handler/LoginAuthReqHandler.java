@@ -37,7 +37,7 @@ public class LoginAuthReqHandler extends ChannelInboundHandlerAdapter {
 			if(jo.containsKey("status")){
 				int status = jo.getInt("status");
 				if(0 == status){
-					System.out.println("login is ok:" + message);
+					System.out.println("玩家登录:" + message);
 					gameClient.isLogin = true;
 					ctx.fireChannelRead(msg);
 				} else {
@@ -46,7 +46,10 @@ public class LoginAuthReqHandler extends ChannelInboundHandlerAdapter {
 				}
 			}
 		} else if(msg != null && message.getHeader().getType() == MessageType.USER_JOIN_RESP.getType()){
-			System.out.println("other user join in :" + message);
+			System.out.println("其他玩家加入 :" + message);
+		}
+		else if(msg != null && message.getHeader().getType() == MessageType.CARD_GET_RESP.getType()){
+			System.out.println("发牌响应 :" + message);
 		}
 		else {
 			ctx.fireChannelRead(msg);

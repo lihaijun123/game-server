@@ -20,6 +20,7 @@ import net.sf.json.JSONObject;
 
 import com.focus3d.game.codec.MessageDecoder;
 import com.focus3d.game.codec.MessageEncoder;
+import com.focus3d.game.constant.MessageType;
 import com.focus3d.game.game.protocal.GameMessage;
 import com.focus3d.game.handler.GameClientHandler;
 import com.focus3d.game.handler.HeartBeatReqHandler;
@@ -41,19 +42,17 @@ public class GameClient {
 	
 	public void sendData(){
 		JSONObject bodyJo = new JSONObject();
-		bodyJo.put("username", "admin");
 		int sessionId = (new Random()).nextInt(1000000);
 		while(channel == null || !channel.isActive()){
 			
 		}
 		for(int i = 0; i < 1; i ++){
 			if(channel != null && channel.isActive()){
-				bodyJo.put("id", (new Random()).nextInt(1000));
 				GameMessage msg = new GameMessage();
 				msg.getHeader().setSessionID(sessionId);
-				msg.getHeader().setType((byte)7);
+				msg.getHeader().setType((byte)MessageType.CARD_GET_REQ.getType());
 				msg.setBody(bodyJo);
-				System.out.println("client send data:" + msg);
+				System.out.println("发牌请求:" + msg);
 				channel.writeAndFlush(msg);
 			}
 		}

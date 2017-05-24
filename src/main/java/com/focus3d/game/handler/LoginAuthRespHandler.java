@@ -70,7 +70,9 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 		message.getHeader().setType((byte)MessageType.LOGIN_RESP.getType());
 		JSONObject jo = new JSONObject();
 		jo.put("status", loginStatus);
+		jo.put("groupid", group.getId());
 		jo.put("userid", currentUser.getId());
+		jo.put("sex", currentUser.getSex());
 		JSONArray jsonArray = new JSONArray();
 		if(currentUser != null){
 			List<User> userList = group.getUserList();
@@ -97,6 +99,7 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 		JSONObject jo = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
 		JSONObject otherJo = new JSONObject();
+		otherJo.put("groupid", group.getId());
 		otherJo.put("userid", currentUser.getId());
 		otherJo.put("sex", currentUser.getSex());
 		jsonArray.add(otherJo);

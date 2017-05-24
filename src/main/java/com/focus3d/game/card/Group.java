@@ -14,7 +14,7 @@ public class Group {
 	private Long id;
 	private String name;
 	private List<User> userList = new ArrayList<User>();
-	private Card card;
+	private CardManager card;
 	public Group(Long id, String name){
 		this.id = id;
 		this.name = name;
@@ -55,10 +55,10 @@ public class Group {
 	public String toString() {
 		return getId() + "," + getName();
 	}
-	public Card getCard() {
+	public CardManager getCard() {
 		return card;
 	}
-	public void setCard(Card card) {
+	public void setCard(CardManager card) {
 		this.card = card;
 	}
 }

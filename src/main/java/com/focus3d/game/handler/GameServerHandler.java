@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.sf.json.JSONObject;
 
 import com.focus3d.game.card.Card;
+import com.focus3d.game.card.CardManager;
 import com.focus3d.game.card.Group;
 import com.focus3d.game.card.User;
 import com.focus3d.game.card.database.GroupDB;
@@ -44,25 +45,26 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			if(message.getHeader().getType() == MessageType.CARD_GET_REQ.getType()){
 				Group group = GroupDB.select(ctx.channel());
 				List<User> userList = group.getUserList();
-				if(userList.size() > 0){
+				if(userList.size() == 3){
 					//发牌请求
 					String body = String.valueOf(message.getBody());
 					if(!StringUtil.isNullOrEmpty(body)){
 						JSONObject bodyJo = JSONObject.fromObject(body);
 						
 					}
-					Card card = new Card();
-					Map<String, String> shuffleCards = card.ShuffleCards();
-					String dp = shuffleCards.get("dp");
-					
+					CardManager cardManager = new CardManager();
+					Map<String, Card> shuffleCards = cardManager.ShuffleCards();
+					Card bootomCard = shuffleCards.get(CardManager.PLAYER_KEY_BOTTOM_CARD);
 					for(int i = 0; i < userList.size(); i ++){
 						User user = userList.get(i);
-						JSONObject jo = new JSONObject();
-						jo.put("card", shuffleCards.get("ply_" + (i + 1)));
-						jo.put("dp", dp);
-						GameMessage cardGetResp = buildCardGetResp(jo);
+						Card card = shuffleCards.get(CardManager.PLAYER_KEY_PREFIX + (i + 1));
+						user.setCard(card);
+						user.setBootomCard(bootomCard);
+						GameMessage cardGetResp = buildCardGetResp(card, bootomCard);
 						user.getChannel().writeAndFlush(cardGetResp);
 					}
+				} else {
+					ctx.writeAndFlush(buildCardGetResp(null, null));
 				}
 			} else if(message.getHeader().getType() == MessageType.BUSINESS_REQ.getType()){
 				System.out.println("客户端请求消息->" + msg);
@@ -79,8 +81,18 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 				channels.remove(id);
 			}
 		}
-		
-		private GameMessage buildCardGetResp(JSONObject jo) {
+		/**
+		 * 发牌请求响应
+		 * *
+		 * @param jo
+		 * @return
+		 */
+		private GameMessage buildCardGetResp(Card card , Card bottomCard) {
+			JSONObject jo = new JSONObject();
+			if(card != null && bottomCard != null){
+				jo.put("card", card.toString());
+				jo.put("dp", bottomCard.toString());
+			}
 			GameMessage message = new GameMessage();
 			message.getHeader().setType((byte)MessageType.CARD_GET_RESP.getType());
 			message.setBody(jo);

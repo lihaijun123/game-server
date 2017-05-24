@@ -38,6 +38,7 @@ public class MessageDecoder extends LengthFieldBasedFrameDecoder {
 		header.setSessionID(sessionId);
 		header.setType(type);
 		message.setHeader(header);
+		message.getHeader().setLength(length);
 		if(!"".equals(body)){
 			JSONObject jo = JSONObject.fromObject(body);
 			message.setBody(jo);

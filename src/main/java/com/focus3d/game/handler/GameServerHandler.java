@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import com.focus3d.game.card.Card;
@@ -59,11 +60,13 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 						Card card = shuffleCards.get(CardManager.PLAYER_KEY_PREFIX + (i + 1));
 						user.setCard(card);
 						user.setBootomCard(bootomCard);
-						GameMessage cardGetResp = buildCardGetResp(card, bootomCard);
+					}
+					for(User user : userList){
+						GameMessage cardGetResp = buildCardGetResp(user, userList, group);
 						user.getChannel().writeAndFlush(cardGetResp);
 					}
 				} else {
-					ctx.writeAndFlush(buildCardGetResp(null, null));
+					ctx.writeAndFlush(buildCardGetResp(null, null, null));
 				}
 			} else if(message.getHeader().getType() == MessageType.BUSINESS_REQ.getType()){
 				System.out.println("客户端请求消息->" + msg);
@@ -86,11 +89,25 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 		 * @param jo
 		 * @return
 		 */
-		private GameMessage buildCardGetResp(Card card , Card bottomCard) {
+		private GameMessage buildCardGetResp(User currentUser , List<User> userList, Group group) {
 			JSONObject jo = new JSONObject();
-			if(card != null && bottomCard != null){
-				jo.put("card", card.toString());
-				jo.put("dp", bottomCard.toString());
+			if(currentUser != null){
+				Card card = currentUser.getCard();
+				Card bootomCard = currentUser.getBootomCard();
+				jo.put("groupid", group.getId());
+				jo.put("userid", currentUser.getId());
+				jo.put("card", card.getData());
+				jo.put("dp", bootomCard.toString());
+				JSONArray jsonArray = new JSONArray();
+				for(User user : userList){
+					if(!user.equals(currentUser)){
+						JSONObject otherJo = new JSONObject();
+						otherJo.put("userid", user.getId());
+						otherJo.put("card", user.getCard().getData());
+						jsonArray.add(otherJo);
+					}
+				}
+				jo.put("other", jsonArray.toString());
 			}
 			GameMessage message = new GameMessage();
 			message.getHeader().setType((byte)MessageType.CARD_GET_RESP.getType());

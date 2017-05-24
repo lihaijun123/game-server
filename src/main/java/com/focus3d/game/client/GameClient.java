@@ -42,7 +42,6 @@ public class GameClient {
 	public void sendData(){
 		JSONObject bodyJo = new JSONObject();
 		bodyJo.put("username", "admin");
-		bodyJo.put("password", "test");
 		int sessionId = (new Random()).nextInt(1000000);
 		while(channel == null || !channel.isActive()){
 			

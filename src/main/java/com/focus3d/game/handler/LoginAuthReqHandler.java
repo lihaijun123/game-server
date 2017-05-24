@@ -1,5 +1,7 @@
 package com.focus3d.game.handler;
 
+import java.util.Random;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import net.sf.json.JSONObject;
@@ -61,8 +63,7 @@ public class LoginAuthReqHandler extends ChannelInboundHandlerAdapter {
 		GameMessage message = new GameMessage();
 		message.getHeader().setType((byte)MessageType.LOGIN_REQ.getType());
 		JSONObject jo = new JSONObject();
-		jo.put("username", "admin");
-		jo.put("password", "test2");
+		jo.put("userid", (new Random()).nextInt(10));
 		message.setBody(jo);
 		return message;
 	}

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.focus3d.game.card.User;
-import com.focus3d.game.card.utils.IdGenerateUtils;
 
 /**
  * 
@@ -19,19 +18,17 @@ public class UserDB {
 	private static List<User> data = new ArrayList<User>();
 	
 	static {
-		User user = new User(IdGenerateUtils.getId(), "player" + data.size(), "admin", "test");
-		data.add(user);
-		User user2 = new User(IdGenerateUtils.getId(), "player2" + data.size(), "admin", "test2");
-		data.add(user2);
-		User user3 = new User(IdGenerateUtils.getId(), "player3" + data.size(), "admin", "test3");
-		data.add(user3);
+		for(int i = 0; i < 20; i ++){
+			User user = new User((long) i, "user_" + i);
+			data.add(user);
+		}
 	}
 	
-	public static User select(String loginUserName, String password){
+	public static User select(String userId){
 		User user = null;
-		if(!StringUtil.isNullOrEmpty(loginUserName) && !StringUtil.isNullOrEmpty(password)){
+		if(!StringUtil.isNullOrEmpty(userId)){
 			for (User u : data) {
-				if(u.getLoginUserName().equals(loginUserName) && u.getLoginPassword().equals(password)){
+				if(String.valueOf(u.getId()).equals(userId)){
 					user = u;
 					break;
 				}

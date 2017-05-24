@@ -12,16 +12,13 @@ public class User {
 	private Long id;
 	private String name;
 	private Channel channel;
-	private String loginUserName;
-	private String loginPassword;
 	private Integer sex = 1;//0-女 1-男
 	
-	public User(Long id, String name, String loginUserName, String loginPassword){
+	public User(Long id, String name){
 		this.id = id;
 		this.name = name;
-		this.loginUserName = loginUserName;
-		this.loginPassword = loginPassword;
 	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -54,18 +51,7 @@ public class User {
 		}
 		return false;
 	}
-	public String getLoginUserName() {
-		return loginUserName;
-	}
-	public void setLoginUserName(String loginUserName) {
-		this.loginUserName = loginUserName;
-	}
-	public String getLoginPassword() {
-		return loginPassword;
-	}
-	public void setLoginPassword(String loginPassword) {
-		this.loginPassword = loginPassword;
-	}
+	
 	@Override
 	public String toString() {
 		return getId().toString();

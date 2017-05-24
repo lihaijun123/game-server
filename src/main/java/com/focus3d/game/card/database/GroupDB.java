@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.focus3d.game.card.Group;
@@ -65,5 +66,17 @@ public class GroupDB {
 			}
 		}
 		return group;
+	}
+	
+	public static void delete(Channel channel){
+		for(Group g : data){
+			Iterator<User> userIterator = g.getUserList().iterator();
+			while(userIterator.hasNext()){
+				User u = userIterator.next();
+				if(u.getChannel().id().toString().equals(channel.id().toString())){
+					userIterator.remove();
+				}
+			}
+		}
 	}
 }

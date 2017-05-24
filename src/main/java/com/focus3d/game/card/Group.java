@@ -53,7 +53,7 @@ public class Group {
 	}
 	@Override
 	public String toString() {
-		return getId() + "," + getName();
+		return "id:" + getId() + "," + "name:" + getName() + ",users[" + getUserList().size() + "]";
 	}
 	public CardManager getCard() {
 		return card;

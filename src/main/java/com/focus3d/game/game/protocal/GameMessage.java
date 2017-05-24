@@ -22,6 +22,6 @@ public class GameMessage {
 	}
 	@Override
 	public String toString() {
-		return "header-[" + header.toString() + "]" + "#body-[" + (body != null ? body.toString() : "") + "]";
+		return "header-[" + header.toString() + "]" + " body-[" + (body != null ? body.toString() : "") + "]";
 	}
 }

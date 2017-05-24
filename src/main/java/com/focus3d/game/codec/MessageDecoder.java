@@ -17,6 +17,7 @@ public class MessageDecoder extends LengthFieldBasedFrameDecoder {
 
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+		System.out.println("###### decode sta ######");
 		ByteBuf frame = (ByteBuf)super.decode(ctx, in);
 		if(frame == null){
 			return null;
@@ -25,16 +26,10 @@ public class MessageDecoder extends LengthFieldBasedFrameDecoder {
 		int sessionId = frame.readInt();
 		byte type = frame.readByte();
 		byte[] mb = new byte[frame.readableBytes()];
-		//System.out.println("length->" + length);
-		System.out.println("sessionId->" + sessionId);
-		System.out.println("type->" + type);
-		System.out.println("bodyLength->" + mb.length);
-		System.out.println("channels->" + GameServerHandler.channels.size());
 		frame.readBytes(mb);
 		String body = new String(mb, "UTF-8");
 		GameMessage message = new GameMessage();
 		Header header = new Header();
-		//header.setLength(length);
 		header.setSessionID(sessionId);
 		header.setType(type);
 		message.setHeader(header);
@@ -44,6 +39,12 @@ public class MessageDecoder extends LengthFieldBasedFrameDecoder {
 			message.setBody(jo);
 			
 		}
+		System.out.println("length->" + mb.length);
+		System.out.println("sessionId->" + sessionId);
+		System.out.println("type->" + type);
+		System.out.println("body->" + body);
+		System.out.println("channels->" + GameServerHandler.channels.size());
+		System.out.println("###### decode end ######");
 		return message;
 	}
 	

@@ -25,6 +25,7 @@ public class LoginAuthReqHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		GameMessage message = buildLoginReq();
+		System.out.println("玩家登录请求:" + message.toString());
 		ctx.writeAndFlush(message);
 	}
 
@@ -37,16 +38,16 @@ public class LoginAuthReqHandler extends ChannelInboundHandlerAdapter {
 			if(jo.containsKey("status")){
 				int status = jo.getInt("status");
 				if(0 == status){
-					System.out.println("玩家登录:" + message);
+					System.out.println("玩家登录响应:" + message);
 					gameClient.isLogin = true;
 					ctx.fireChannelRead(msg);
 				} else {
 					ctx.close();
-					System.out.println("握手失败，关闭连接");
+					System.out.println("玩家登录失败，关闭连接");
 				}
 			}
 		} else if(msg != null && message.getHeader().getType() == MessageType.USER_JOIN_RESP.getType()){
-			System.out.println("其他玩家加入 :" + message);
+			System.out.println("其他玩家加入响应 :" + message);
 		}
 		else if(msg != null && message.getHeader().getType() == MessageType.CARD_GET_RESP.getType()){
 			System.out.println("发牌响应 :" + message);

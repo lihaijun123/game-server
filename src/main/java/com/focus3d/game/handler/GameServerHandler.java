@@ -40,7 +40,6 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 
 		@Override
 		public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-			System.out.println(this.toString());
 			GameMessage message = (GameMessage)msg;
 			if(message.getHeader().getType() == MessageType.CARD_GET_REQ.getType()){
 				Group group = GroupDB.select(ctx.channel());

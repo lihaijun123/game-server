@@ -75,6 +75,7 @@ public class GroupDB {
 				User u = userIterator.next();
 				if(u.getChannel().id().toString().equals(channel.id().toString())){
 					userIterator.remove();
+					System.out.println("玩家：" + u.toString() + " 退出 组[" + g.toString() + "]");
 				}
 			}
 		}

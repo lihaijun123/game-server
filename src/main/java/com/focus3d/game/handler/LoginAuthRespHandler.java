@@ -41,7 +41,7 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 				user.setChannel(ctx.channel());
 				//加入组
 				Group group = GroupDB.join(user);
-				log.info("user:" + user.toString() + "join in group[" + group.toString() + "]");
+				log.info("user:" + user.toString() + " 加入组[" + group.toString() + "]");
 				ctx.writeAndFlush(buildLoginResp(0, user, group));
 				sendSelfInfoToOther(user, group);
 			} else {

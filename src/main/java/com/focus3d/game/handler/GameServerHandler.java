@@ -29,7 +29,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			String id = String.valueOf(ctx.channel().id());
 			if(!channels.containsKey(id)){
 				channels.put(id, ctx.channel());
-				System.out.println("now have " + channels.size() + " join in");
+				System.out.println("已有 " + channels.size() + " 客户端连接");
 			}
 	    }
 
@@ -66,6 +66,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 						user.getChannel().writeAndFlush(cardGetResp);
 					}
 				} else {
+					System.out.println("组[" + group.getId() + "]成员数：" + userList.size() + " 小于3，不可以发牌");
 					ctx.writeAndFlush(buildCardGetResp(MessageType.CARD_GET_RESP, null, null, null));
 				}
 			} else if(message.getHeader().getType() == MessageType.CARD_SEND_REQ.getType()){

@@ -77,6 +77,7 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 		jo.put("groupid", group.getId());
 		jo.put("userid", currentUser.getId());
 		jo.put("sex", currentUser.getSex());
+		jo.put("seat", currentUser.getSeatNo());
 		JSONArray jsonArray = new JSONArray();
 		if(currentUser != null){
 			List<User> userList = group.getUserList();
@@ -86,6 +87,7 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 						JSONObject otherJo = new JSONObject();
 						otherJo.put("userid", user.getId());
 						otherJo.put("sex", user.getSex());
+						otherJo.put("seat", user.getSeatNo());
 						jsonArray.add(otherJo);
 					}
 				}
@@ -106,6 +108,7 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 		otherJo.put("groupid", group.getId());
 		otherJo.put("userid", currentUser.getId());
 		otherJo.put("sex", currentUser.getSex());
+		otherJo.put("seat", currentUser.getSeatNo());
 		jsonArray.add(otherJo);
 		jo.put("other", jsonArray);
 		List<User> userList = group.getUserList();

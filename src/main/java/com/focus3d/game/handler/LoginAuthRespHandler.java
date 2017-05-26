@@ -56,6 +56,10 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		Channel channel = ctx.channel();
 		String log = channel.remoteAddress().toString() + ">> connect.";
+		GameMessage message = new GameMessage();
+		message.getHeader().setType((byte)MessageType.CONNECT_ACTIVE_RESP.getType());
+		message.setBody(new JSONObject());
+		channel.writeAndFlush(message);
 		System.out.println(log);
 	}
 	

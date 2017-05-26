@@ -19,7 +19,7 @@ public class UserDB {
 	
 	static {
 		for(int i = 0; i < 20; i ++){
-			User user = new User((long) i, "user_" + i);
+			User user = new User(String.valueOf(i), "user_" + i);
 			data.add(user);
 		}
 	}

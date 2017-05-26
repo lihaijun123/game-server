@@ -45,7 +45,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			if(message.getHeader().getType() == MessageType.CARD_GET_REQ.getType()){
 				Group group = GroupDB.select(ctx.channel());
 				List<User> userList = group.getUserList();
-				if(userList.size() == 3){
+				if(userList.size() == 2){
 					//发牌请求
 					String body = String.valueOf(message.getBody());
 					if(!StringUtil.isNullOrEmpty(body)){
@@ -62,15 +62,31 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 						user.setBootomCard(bootomCard);
 					}
 					for(User user : userList){
-						GameMessage cardGetResp = buildCardGetResp(user, userList, group);
+						GameMessage cardGetResp = buildCardGetResp(MessageType.CARD_PUSH_RESP, user, userList, group);
 						user.getChannel().writeAndFlush(cardGetResp);
 					}
 				} else {
-					ctx.writeAndFlush(buildCardGetResp(null, null, null));
+					ctx.writeAndFlush(buildCardGetResp(MessageType.CARD_GET_RESP, null, null, null));
 				}
-			} else if(message.getHeader().getType() == MessageType.BUSINESS_REQ.getType()){
-				System.out.println("客户端请求消息->" + msg);
-				//业务处理
+			} else if(message.getHeader().getType() == MessageType.CARD_SEND_REQ.getType()){
+				//发牌请求
+				String body = String.valueOf(message.getBody());
+				if(!StringUtil.isNullOrEmpty(body)){
+					JSONObject bodyJo = JSONObject.fromObject(body);
+					String userId = bodyJo.getString("userid");
+					String card = bodyJo.getString("card");
+					if(!StringUtil.isNullOrEmpty(userId) && !StringUtil.isNullOrEmpty(card)){
+						System.out.println("玩家:" + userId + "发牌：" + card);
+						Group group = GroupDB.select(ctx.channel());
+						List<User> userList = group.getUserList();
+						for (User user : userList) {
+							if(!user.getId().equals(userId)){
+								System.out.println("玩家:" + user.getId() + ",收到玩家：" + userId + "的牌：" + card);
+								user.getChannel().writeAndFlush(buildCardSendResp(userId, card));
+							}
+						}
+					}
+				}
 			} else {
 				ctx.fireChannelRead(msg);
 			}
@@ -89,7 +105,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 		 * @param jo
 		 * @return
 		 */
-		private GameMessage buildCardGetResp(User currentUser , List<User> userList, Group group) {
+		private GameMessage buildCardGetResp(MessageType messageType, User currentUser , List<User> userList, Group group) {
 			JSONObject jo = new JSONObject();
 			if(currentUser != null){
 				Card card = currentUser.getCard();
@@ -110,7 +126,23 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 				jo.put("other", jsonArray.toString());
 			}
 			GameMessage message = new GameMessage();
-			message.getHeader().setType((byte)MessageType.CARD_GET_RESP.getType());
+			message.getHeader().setType((byte)messageType.getType());
+			message.setBody(jo);
+			return message;
+		}
+		/**
+		 * 
+		 * *
+		 * @param sendUserId 出牌者id
+		 * @param card 出牌者出的牌
+		 * @return
+		 */
+		private GameMessage buildCardSendResp(String sendUserId, String card) {
+			JSONObject jo = new JSONObject();
+			jo.put("userid", sendUserId);
+			jo.put("card", card);
+			GameMessage message = new GameMessage();
+			message.getHeader().setType((byte)MessageType.CARD_SEND_RESP.getType());
 			message.setBody(jo);
 			return message;
 		}

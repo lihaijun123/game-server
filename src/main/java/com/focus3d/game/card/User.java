@@ -9,24 +9,27 @@ import io.netty.channel.Channel;
  *
  */
 public class User {
-	private Long id;
+	private String id;
 	private String name;
 	private Channel channel;
 	private Integer sex = 1;//0-女 1-男
 	private Card card;
 	private Card bootomCard;
+	private Integer SeatNo;
 	
-	public User(Long id, String name){
+	public User(String id, String name){
 		this.id = id;
 		this.name = name;
 	}
 	
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(Long id) {
+
+	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getName() {
 		return name;
 	}
@@ -80,5 +83,14 @@ public class User {
 	public void setBootomCard(Card bootomCard) {
 		this.bootomCard = bootomCard;
 	}
+
+	public Integer getSeatNo() {
+		return SeatNo;
+	}
+
+	public void setSeatNo(Integer seatNo) {
+		SeatNo = seatNo;
+	}
+	
 	
 }

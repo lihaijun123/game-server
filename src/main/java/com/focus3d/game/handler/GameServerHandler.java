@@ -69,6 +69,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 					}
 					//随机选出一个叫地主玩家
 					User callHostUser = userList.get((new Random()).nextInt(userList.size()));
+					System.out.println("玩家：" + callHostUser.toString() + " 被选出叫地主权利。");
 					for(User user : userList){
 						GameMessage cardGetResp = buildCallHostResp(callHostUser);
 						user.getChannel().writeAndFlush(cardGetResp);

@@ -13,15 +13,27 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.focus3d.game.card.Card;
 import com.focus3d.game.card.CardManager;
 import com.focus3d.game.card.Group;
 import com.focus3d.game.card.User;
 import com.focus3d.game.card.database.GroupDB;
+import com.focus3d.game.card.database.UserDB;
 import com.focus3d.game.constant.MessageType;
 import com.focus3d.game.game.protocal.GameMessage;
-
+/**
+ * 
+ * *
+ * @author lihaijun
+ *
+ */
 public class GameServerHandler extends ChannelInboundHandlerAdapter {
+	
+	private static final Logger log = LoggerFactory.getLogger(GameServerHandler.class);
+	
 	public static Map<String, Channel> channels = new ConcurrentHashMap<String, Channel>();
 	
 	@Override
@@ -44,10 +56,10 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 		public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 			GameMessage message = (GameMessage)msg;
 			if(message.getHeader().getType() == MessageType.CARD_GET_REQ.getType()){
+				//发牌
 				Group group = GroupDB.select(ctx.channel());
 				List<User> userList = group.getUserList();
 				if(userList.size() == 3){
-					//发牌请求
 					String body = String.valueOf(message.getBody());
 					if(!StringUtil.isNullOrEmpty(body)){
 						JSONObject bodyJo = JSONObject.fromObject(body);
@@ -69,17 +81,16 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 					}
 					//随机选出一个叫地主玩家
 					User callHostUser = userList.get((new Random()).nextInt(userList.size()));
+					callHostUser.getCard().setCaller(true);
 					System.out.println("玩家：" + callHostUser.toString() + " 被选出叫地主权利。");
-					for(User user : userList){
-						GameMessage cardGetResp = buildCallHostResp(callHostUser);
-						user.getChannel().writeAndFlush(cardGetResp);
-					}
+					GameMessage cardGetResp = buildCallHostResp(callHostUser);
+					callHostUser.getChannel().writeAndFlush(cardGetResp);
 				} else {
 					System.out.println("组[" + group.getId() + "]成员数：" + userList.size() + " 小于3，不可以发牌");
 					ctx.writeAndFlush(buildCardGetResp(MessageType.CARD_GET_RESP, null, null, null));
 				}
 			} else if(message.getHeader().getType() == MessageType.CARD_SEND_REQ.getType()){
-				//打牌请求
+				//打牌
 				String body = String.valueOf(message.getBody());
 				if(!StringUtil.isNullOrEmpty(body)){
 					JSONObject bodyJo = JSONObject.fromObject(body);
@@ -98,9 +109,103 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 								}
 							}
 							System.out.println("玩家:" + user.getId() + ",收到玩家：" + userId + "的牌：" + card);
-							user.getChannel().writeAndFlush(buildCardSendResp(user, card));
+							user.getChannel().writeAndFlush(buildCardSendResp(userId, user, card));
 						}
 					}
+				}
+			} else if(message.getHeader().getType() == MessageType.USER_ROB_HOST_REQ.getType()){ 
+				String body = String.valueOf(message.getBody());
+				if(!StringUtil.isNullOrEmpty(body)){
+					JSONObject bodyJo = JSONObject.fromObject(body);
+					String userId = bodyJo.getString("userid");
+					int station = bodyJo.getInt("station");//0-不抢 1-抢
+					Group group = GroupDB.select(ctx.channel());
+					List<User> userList = group.getUserList();
+					//初始化计数器
+					int initCount = 0;
+					for (User user : userList) {
+						Integer clickCount = user.getCard().getRobHostClickCount();
+						if(clickCount != null){
+							initCount += clickCount;
+						}
+					}
+					//设置玩家是否抢地主计数
+					for (User user : userList) {
+						if(userId.equals(user.getId())){
+							Integer clickCount = user.getCard().getRobHostClickCount();
+							if(station == 0){
+								if(clickCount == null){
+									user.getCard().setRobHostClickCount(0);
+								}
+							} else {
+								//叫牌者第二次抢牌
+								if(user.getCard().isCaller() && user.getCard().getRobHostClickCount() > 0){
+									user.getCard().setSecondClick(true);
+								}
+								user.getCard().setRobHostClickCount(++ initCount);
+							}
+						}
+					}
+					//玩家是否都确认过
+					boolean isAllClick = true;
+					for (User user : userList) {
+						if(user.getCard().getRobHostClickCount() == null){
+							isAllClick = false;
+							break;
+						}
+					}
+					if(isAllClick){
+						String hostUserid = "";
+						//验证谁抢得了地主
+						if(initCount == 0){
+							//重新洗牌
+						} else if(initCount == 1) {
+							//叫地主玩家既是地主
+							for (User user : userList){
+								if(user.getCard().isCaller()){
+									hostUserid = user.getId();
+									break;
+								}
+							}
+						} else if(initCount == 3) {
+							//有2个玩家抢地主，或者叫牌者第二次不要牌
+							boolean isSecondCall = false;
+							int count = 0;
+							for (User user : userList){
+								if(user.getCard().isCaller() && user.getCard().isSecondClick()){
+									isSecondCall = true;
+									count = user.getCard().getRobHostClickCount();
+									hostUserid = user.getId();
+									break;
+								}
+							}
+							if(!isSecondCall){
+								//通知叫地主玩家第二次抢牌
+								
+							} else {
+								for (User user : userList){
+									if(user.getCard().getRobHostClickCount() == 2){
+										hostUserid = user.getId();
+										break;
+									}
+								}
+							}
+						} else if(initCount == 6) {
+							//有2个玩家抢地主，叫牌者第二次点击抢地主
+							for (User user : userList){
+								if(user.getCard().isCaller() && user.getCard().isSecondClick()){
+									hostUserid = user.getId();
+									break;
+								}
+							}
+						} else if(initCount == 7) {
+							//有3个玩家抢地主，或者叫牌玩家第二次不要牌
+							
+						} else if(initCount == 14) {
+							//有3个玩家抢地主，叫牌者第二次点击抢地主
+						}
+					}
+						
 				}
 			} else {
 				ctx.fireChannelRead(msg);
@@ -152,9 +257,9 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 		 * @param card 出牌者出的牌
 		 * @return
 		 */
-		private GameMessage buildCardSendResp(User user, String card) {
+		private GameMessage buildCardSendResp(String userId, User user, String card) {
 			JSONObject jo = new JSONObject();
-			jo.put("userid", user.getId());
+			jo.put("userid", userId);
 			jo.put("card", card);
 			jo.put("remain", user.getRemainCard());
 			GameMessage message = new GameMessage();
@@ -163,7 +268,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			return message;
 		}
 		/**
-		 * 抢地主
+		 * 随机分配给玩家叫地主
 		 * *
 		 * @param user
 		 * @return
@@ -172,7 +277,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			JSONObject jo = new JSONObject();
 			jo.put("userid", user.getId());
 			GameMessage message = new GameMessage();
-			message.getHeader().setType((byte)MessageType.USER_ROB_HOST_RESP.getType());
+			message.getHeader().setType((byte)MessageType.USER_ROB_HOST_CALL_RESP.getType());
 			message.setBody(jo);
 			return message;
 		}

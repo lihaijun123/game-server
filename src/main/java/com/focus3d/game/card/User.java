@@ -15,7 +15,7 @@ public class User {
 	private Integer sex = 1;//0-女 1-男
 	private Card card;
 	private Card bootomCard;
-	private Integer SeatNo;
+	private Integer seatNo;//座位号
 	private Integer remainCard;//还剩几张牌
 	
 	public User(String id, String name){
@@ -86,11 +86,11 @@ public class User {
 	}
 
 	public Integer getSeatNo() {
-		return SeatNo;
+		return seatNo;
 	}
 
 	public void setSeatNo(Integer seatNo) {
-		SeatNo = seatNo;
+		this.seatNo = seatNo;
 	}
 
 	public Integer getRemainCard() {

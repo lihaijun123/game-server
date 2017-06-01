@@ -20,7 +20,8 @@ public enum MessageType {
 	CARD_PUSH_RESP(14, "玩家满3位推牌响应消息"),
 	USER_JOIN_RESP(21, "玩家进入加入游戏响应消息"),
 	USER_ROB_HOST_REQ(22, "玩家抢地主请求消息"),
-	USER_ROB_HOST_RESP(23, "玩家抢地主响应消息");
+	USER_ROB_HOST_RESP(23, "玩家抢地主响应消息"),
+	USER_ROB_HOST_CALL_RESP(24, "分配玩家叫地主");
 	
     int type;
 	String name;

@@ -7,6 +7,7 @@ import io.netty.util.internal.StringUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.json.JSONArray;
@@ -45,7 +46,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			if(message.getHeader().getType() == MessageType.CARD_GET_REQ.getType()){
 				Group group = GroupDB.select(ctx.channel());
 				List<User> userList = group.getUserList();
-				if(userList.size() == 2){
+				if(userList.size() == 3){
 					//发牌请求
 					String body = String.valueOf(message.getBody());
 					if(!StringUtil.isNullOrEmpty(body)){
@@ -60,9 +61,16 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 						Card card = shuffleCards.get(CardManager.PLAYER_KEY_PREFIX + (i + 1));
 						user.setCard(card);
 						user.setBootomCard(bootomCard);
+						user.setRemainCard(card.getData().split(",").length);
 					}
 					for(User user : userList){
 						GameMessage cardGetResp = buildCardGetResp(MessageType.CARD_PUSH_RESP, user, userList, group);
+						user.getChannel().writeAndFlush(cardGetResp);
+					}
+					//随机选出一个叫地主玩家
+					User callHostUser = userList.get((new Random()).nextInt(userList.size()));
+					for(User user : userList){
+						GameMessage cardGetResp = buildCallHostResp(callHostUser);
 						user.getChannel().writeAndFlush(cardGetResp);
 					}
 				} else {
@@ -70,7 +78,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 					ctx.writeAndFlush(buildCardGetResp(MessageType.CARD_GET_RESP, null, null, null));
 				}
 			} else if(message.getHeader().getType() == MessageType.CARD_SEND_REQ.getType()){
-				//发牌请求
+				//打牌请求
 				String body = String.valueOf(message.getBody());
 				if(!StringUtil.isNullOrEmpty(body)){
 					JSONObject bodyJo = JSONObject.fromObject(body);
@@ -81,10 +89,15 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 						Group group = GroupDB.select(ctx.channel());
 						List<User> userList = group.getUserList();
 						for (User user : userList) {
-							if(!user.getId().equals(userId)){
-								System.out.println("玩家:" + user.getId() + ",收到玩家：" + userId + "的牌：" + card);
-								user.getChannel().writeAndFlush(buildCardSendResp(userId, card));
+							//计算剩余牌
+							if(user.getId().equals(userId)){
+								Integer remainCard = user.getRemainCard();
+								if(remainCard > 0){
+									user.setRemainCard(remainCard - JSONArray.fromObject(card).size());
+								}
 							}
+							System.out.println("玩家:" + user.getId() + ",收到玩家：" + userId + "的牌：" + card);
+							user.getChannel().writeAndFlush(buildCardSendResp(user, card));
 						}
 					}
 				}
@@ -101,7 +114,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			}
 		}
 		/**
-		 * 发牌请求响应
+		 * 发牌
 		 * *
 		 * @param jo
 		 * @return
@@ -132,20 +145,41 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			return message;
 		}
 		/**
-		 * 
+		 * 打牌
 		 * *
 		 * @param sendUserId 出牌者id
 		 * @param card 出牌者出的牌
 		 * @return
 		 */
-		private GameMessage buildCardSendResp(String sendUserId, String card) {
+		private GameMessage buildCardSendResp(User user, String card) {
 			JSONObject jo = new JSONObject();
-			jo.put("userid", sendUserId);
+			jo.put("userid", user.getId());
 			jo.put("card", card);
+			jo.put("remain", user.getRemainCard());
 			GameMessage message = new GameMessage();
 			message.getHeader().setType((byte)MessageType.CARD_SEND_RESP.getType());
+			message.setBody(jo + "\0");
+			return message;
+		}
+		/**
+		 * 抢地主
+		 * *
+		 * @param user
+		 * @return
+		 */
+		private GameMessage buildCallHostResp(User user) {
+			JSONObject jo = new JSONObject();
+			jo.put("userid", user.getId());
+			GameMessage message = new GameMessage();
+			message.getHeader().setType((byte)MessageType.USER_ROB_HOST_RESP.getType());
 			message.setBody(jo);
 			return message;
+		}
+		public static void main(String[] args){
+			String s = "[\"3_11\",\"2_11\",\"2_10\"]";
+			JSONObject jo = new JSONObject();
+			JSONArray fromObject = JSONArray.fromObject(s);
+			System.out.println(fromObject.size());
 		}
 	    
 }

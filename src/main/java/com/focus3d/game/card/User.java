@@ -16,6 +16,7 @@ public class User {
 	private Card card;
 	private Card bootomCard;
 	private Integer SeatNo;
+	private Integer remainCard;//还剩几张牌
 	
 	public User(String id, String name){
 		this.id = id;
@@ -90,6 +91,14 @@ public class User {
 
 	public void setSeatNo(Integer seatNo) {
 		SeatNo = seatNo;
+	}
+
+	public Integer getRemainCard() {
+		return remainCard;
+	}
+
+	public void setRemainCard(Integer remainCard) {
+		this.remainCard = remainCard;
 	}
 	
 	

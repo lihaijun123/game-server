@@ -48,7 +48,7 @@ public class GroupDB {
 			//join in
 			group.getUserList().add(user);
 			//分配座位号
-			user.setSeatNo(group.getUserList().size());
+			user.setSeatNo(group.getUserList().size() - 1);
 			System.out.println("玩家 :" + user.toString() + " 加入组:" + group.getId() + " 座位号:" + user.getSeatNo());
 		}
 		return group;

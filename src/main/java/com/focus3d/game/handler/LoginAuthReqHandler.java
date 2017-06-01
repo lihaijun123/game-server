@@ -1,7 +1,5 @@
 package com.focus3d.game.handler;
 
-import java.util.Random;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import net.sf.json.JSONObject;
@@ -52,6 +50,9 @@ public class LoginAuthReqHandler extends ChannelInboundHandlerAdapter {
 		else if(msg != null && message.getHeader().getType() == MessageType.CARD_GET_RESP.getType()){
 			System.out.println("发牌响应 :" + message);
 		}
+		else if(msg != null && message.getHeader().getType() == MessageType.CARD_SEND_RESP.getType()){
+			System.out.println("打牌响应 :" + message);
+		}
 		else {
 			ctx.fireChannelRead(msg);
 		}
@@ -67,7 +68,8 @@ public class LoginAuthReqHandler extends ChannelInboundHandlerAdapter {
 		GameMessage message = new GameMessage();
 		message.getHeader().setType((byte)MessageType.LOGIN_REQ.getType());
 		JSONObject jo = new JSONObject();
-		jo.put("userid", (new Random()).nextInt(10));
+		//jo.put("userid", (new Random()).nextInt(10));
+		jo.put("userid", 1);
 		message.setBody(jo);
 		return message;
 	}

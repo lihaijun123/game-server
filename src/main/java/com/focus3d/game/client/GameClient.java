@@ -49,20 +49,33 @@ public class GameClient {
 		for(int i = 0; i < 1; i ++){
 			if(channel != null && channel.isActive()){
 				GameMessage msg = new GameMessage();
-				/*msg.getHeader().setSessionID(sessionId);
+			
+				
+				msg.getHeader().setSessionID(sessionId);
 				msg.getHeader().setType((byte)MessageType.CARD_GET_REQ.getType());
 				msg.setBody(bodyJo);
 				System.out.println("发牌请求:" + msg);
-				channel.writeAndFlush(msg);*/
+				channel.writeAndFlush(msg);
 				
 				
-				bodyJo = new JSONObject();
+				/*bodyJo = new JSONObject();
 				bodyJo.put("userid", 1);
 				bodyJo.put("card", "[\"3_11\",\"2_11\",\"2_10\"]");
 				
 				msg = new GameMessage();
 				msg.getHeader().setSessionID(sessionId);
 				msg.getHeader().setType((byte)MessageType.CARD_SEND_REQ.getType());
+				msg.setBody(bodyJo);
+				System.out.println("打牌请求:" + msg);
+				channel.writeAndFlush(msg);
+				*/
+				bodyJo = new JSONObject();
+				bodyJo.put("userid", 1);
+				bodyJo.put("station", "0");
+				
+				msg = new GameMessage();
+				msg.getHeader().setSessionID(sessionId);
+				msg.getHeader().setType((byte)MessageType.USER_ROB_HOST_REQ.getType());
 				msg.setBody(bodyJo);
 				System.out.println("打牌请求:" + msg);
 				channel.writeAndFlush(msg);

@@ -21,7 +21,6 @@ import com.focus3d.game.card.CardManager;
 import com.focus3d.game.card.Group;
 import com.focus3d.game.card.User;
 import com.focus3d.game.card.database.GroupDB;
-import com.focus3d.game.card.database.UserDB;
 import com.focus3d.game.constant.MessageType;
 import com.focus3d.game.game.protocal.GameMessage;
 /**
@@ -139,7 +138,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 								}
 							} else {
 								//叫牌者第二次抢牌
-								if(user.getCard().isCaller() && user.getCard().getRobHostClickCount() > 0){
+								if(user.getCard().isCaller() && user.getCard().getRobHostClickCount() != null){
 									user.getCard().setSecondClick(true);
 								}
 								user.getCard().setRobHostClickCount(++ initCount);
@@ -159,6 +158,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 						//验证谁抢得了地主
 						if(initCount == 0){
 							//重新洗牌
+							
 						} else if(initCount == 1) {
 							//叫地主玩家既是地主
 							for (User user : userList){
@@ -170,11 +170,9 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 						} else if(initCount == 3) {
 							//有2个玩家抢地主，或者叫牌者第二次不要牌
 							boolean isSecondCall = false;
-							int count = 0;
 							for (User user : userList){
 								if(user.getCard().isCaller() && user.getCard().isSecondClick()){
 									isSecondCall = true;
-									count = user.getCard().getRobHostClickCount();
 									hostUserid = user.getId();
 									break;
 								}
@@ -200,12 +198,41 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 							}
 						} else if(initCount == 7) {
 							//有3个玩家抢地主，或者叫牌玩家第二次不要牌
+							boolean isSecondCall = false;
+							for (User user : userList){
+								if(user.getCard().isCaller() && user.getCard().isSecondClick()){
+									isSecondCall = true;
+									hostUserid = user.getId();
+									break;
+								}
+							}
+							if(!isSecondCall){
+								//通知叫地主玩家第二次抢牌
+								
+							} else {
+								for (User user : userList){
+									if(user.getCard().getRobHostClickCount() == 4){
+										hostUserid = user.getId();
+										break;
+									}
+								}
+							}
 							
 						} else if(initCount == 14) {
 							//有3个玩家抢地主，叫牌者第二次点击抢地主
+							for (User user : userList){
+								if(user.getCard().isCaller() && user.getCard().isSecondClick()){
+									hostUserid = user.getId();
+									break;
+								}
+							}
 						}
+						if(!StringUtil.isNullOrEmpty(hostUserid)){
+							System.out.println("玩家：" + hostUserid + " 抢得了本轮的地主。");
+						}
+					} else {
+						System.out.println("还有玩家没有点击是否要地主");
 					}
-						
 				}
 			} else {
 				ctx.fireChannelRead(msg);

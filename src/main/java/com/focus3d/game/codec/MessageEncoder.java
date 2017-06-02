@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-import com.focus3d.game.game.protocal.GameMessage;
+import com.focus3d.game.protocal.GameMessage;
 
 public class MessageEncoder extends MessageToByteEncoder<GameMessage>{
 

@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import com.focus3d.game.constant.MessageType;
-import com.focus3d.game.game.protocal.GameMessage;
+import com.focus3d.game.protocal.GameMessage;
 
 public class GameClientHandler extends ChannelInboundHandlerAdapter {
 	@Override

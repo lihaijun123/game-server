@@ -13,11 +13,8 @@ public class User {
 	private String name;
 	private Channel channel;
 	private Integer sex = 1;//0-女 1-男
-	private Card card;
-	private Card bootomCard;
 	private Integer seatNo;//座位号
-	private Integer remainCard;//还剩几张牌
-	
+	private Card card;
 	public User(String id, String name){
 		this.id = id;
 		this.name = name;
@@ -69,22 +66,6 @@ public class User {
 		this.sex = sex;
 	}
 
-	public Card getCard() {
-		return card;
-	}
-
-	public void setCard(Card card) {
-		this.card = card;
-	}
-
-	public Card getBootomCard() {
-		return bootomCard;
-	}
-
-	public void setBootomCard(Card bootomCard) {
-		this.bootomCard = bootomCard;
-	}
-
 	public Integer getSeatNo() {
 		return seatNo;
 	}
@@ -93,13 +74,12 @@ public class User {
 		this.seatNo = seatNo;
 	}
 
-	public Integer getRemainCard() {
-		return remainCard;
+	public Card getCard() {
+		return card;
 	}
 
-	public void setRemainCard(Integer remainCard) {
-		this.remainCard = remainCard;
+	public void setCard(Card card) {
+		this.card = card;
 	}
-	
 	
 }

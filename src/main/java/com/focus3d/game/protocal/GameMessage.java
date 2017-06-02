@@ -1,4 +1,4 @@
-package com.focus3d.game.game.protocal;
+package com.focus3d.game.protocal;
 /**
  * 消息协议
  * *

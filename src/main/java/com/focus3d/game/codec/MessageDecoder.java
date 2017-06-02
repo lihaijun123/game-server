@@ -5,9 +5,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import net.sf.json.JSONObject;
 
-import com.focus3d.game.game.protocal.GameMessage;
-import com.focus3d.game.game.protocal.Header;
 import com.focus3d.game.handler.GameServerHandler;
+import com.focus3d.game.protocal.GameMessage;
+import com.focus3d.game.protocal.Header;
 
 public class MessageDecoder extends LengthFieldBasedFrameDecoder {
 	

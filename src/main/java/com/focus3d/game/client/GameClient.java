@@ -21,10 +21,10 @@ import net.sf.json.JSONObject;
 import com.focus3d.game.codec.MessageDecoder;
 import com.focus3d.game.codec.MessageEncoder;
 import com.focus3d.game.constant.MessageType;
-import com.focus3d.game.game.protocal.GameMessage;
 import com.focus3d.game.handler.GameClientHandler;
 import com.focus3d.game.handler.HeartBeatReqHandler;
 import com.focus3d.game.handler.LoginAuthReqHandler;
+import com.focus3d.game.protocal.GameMessage;
 
 public class GameClient {
 	EventLoopGroup workerGroup = new NioEventLoopGroup(4);

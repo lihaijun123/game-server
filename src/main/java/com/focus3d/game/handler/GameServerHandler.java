@@ -22,7 +22,7 @@ import com.focus3d.game.card.Group;
 import com.focus3d.game.card.User;
 import com.focus3d.game.card.database.GroupDB;
 import com.focus3d.game.constant.MessageType;
-import com.focus3d.game.game.protocal.GameMessage;
+import com.focus3d.game.protocal.GameMessage;
 /**
  * 
  * *
@@ -71,8 +71,8 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 						User user = userList.get(i);
 						Card card = shuffleCards.get(CardManager.PLAYER_KEY_PREFIX + (i + 1));
 						user.setCard(card);
-						user.setBootomCard(bootomCard);
-						user.setRemainCard(card.getData().split(",").length);
+						card.setBootomCard(bootomCard);
+						card.setRemainCard(card.getData().split(",").length);
 					}
 					for(User user : userList){
 						GameMessage cardGetResp = buildCardGetResp(MessageType.CARD_PUSH_RESP, user, userList, group);
@@ -93,22 +93,22 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 				String body = String.valueOf(message.getBody());
 				if(!StringUtil.isNullOrEmpty(body)){
 					JSONObject bodyJo = JSONObject.fromObject(body);
-					String userId = bodyJo.getString("userid");
-					String card = bodyJo.getString("card");
-					if(!StringUtil.isNullOrEmpty(userId) && !StringUtil.isNullOrEmpty(card)){
-						System.out.println("玩家:" + userId + "发牌：" + card);
+					String sendCardUserId = bodyJo.getString("userid");
+					String sendCard = bodyJo.getString("card");
+					if(!StringUtil.isNullOrEmpty(sendCardUserId) && !StringUtil.isNullOrEmpty(sendCard)){
+						System.out.println("玩家:" + sendCardUserId + "发牌：" + sendCard);
 						Group group = GroupDB.select(ctx.channel());
 						List<User> userList = group.getUserList();
 						for (User user : userList) {
 							//计算剩余牌
-							if(user.getId().equals(userId)){
-								Integer remainCard = user.getRemainCard();
+							if(user.getId().equals(sendCardUserId)){
+								Integer remainCard = user.getCard().getRemainCard();
 								if(remainCard > 0){
-									user.setRemainCard(remainCard - JSONArray.fromObject(card).size());
+									user.getCard().setRemainCard(remainCard - JSONArray.fromObject(sendCard).size());
 								}
 							}
-							System.out.println("玩家:" + user.getId() + ",收到玩家：" + userId + "的牌：" + card);
-							user.getChannel().writeAndFlush(buildCardSendResp(userId, user, card));
+							System.out.println("玩家:" + user.getId() + ",收到玩家：" + sendCardUserId + "的牌：" + sendCard);
+							user.getChannel().writeAndFlush(buildCardSendResp(sendCardUserId, user, sendCard));
 						}
 					}
 				}
@@ -256,7 +256,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			JSONObject jo = new JSONObject();
 			if(currentUser != null){
 				Card card = currentUser.getCard();
-				Card bootomCard = currentUser.getBootomCard();
+				Card bootomCard = currentUser.getCard().getBootomCard();
 				jo.put("groupid", group.getId());
 				jo.put("userid", currentUser.getId());
 				jo.put("card", card.getData());
@@ -288,7 +288,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			JSONObject jo = new JSONObject();
 			jo.put("userid", userId);
 			jo.put("card", card);
-			jo.put("remain", user.getRemainCard());
+			jo.put("remain", user.getCard().getRemainCard());
 			GameMessage message = new GameMessage();
 			message.getHeader().setType((byte)MessageType.CARD_SEND_RESP.getType());
 			message.setBody(jo + "\0");
@@ -308,11 +308,4 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			message.setBody(jo);
 			return message;
 		}
-		public static void main(String[] args){
-			String s = "[\"3_11\",\"2_11\",\"2_10\"]";
-			JSONObject jo = new JSONObject();
-			JSONArray fromObject = JSONArray.fromObject(s);
-			System.out.println(fromObject.size());
-		}
-	    
 }

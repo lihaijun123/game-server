@@ -1,4 +1,4 @@
-package com.focus3d.game.game.protocal;
+package com.focus3d.game.protocal;
 
 public class Header {
 	private int crcCode = 0xabef0101;

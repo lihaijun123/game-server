@@ -12,6 +12,10 @@ public class Card {
 	private boolean isSecondClick = false;//如果是叫地主玩家，是否第二次点击
 	private boolean isRobHost = false;//是否抢得了地主
 	private Integer robHostClickCount;//点击是否抢地主，数值在上家基础上+1
+
+	private Card bootomCard;
+	private Integer remainCard;//还剩几张牌
+	
 	public Card(String data){
 		this.data = data;
 	}
@@ -60,5 +64,19 @@ public class Card {
 		this.isRobHost = isRobHost;
 	}
 
-	
+	public Card getBootomCard() {
+		return bootomCard;
+	}
+
+	public void setBootomCard(Card bootomCard) {
+		this.bootomCard = bootomCard;
+	}
+
+	public Integer getRemainCard() {
+		return remainCard;
+	}
+
+	public void setRemainCard(Integer remainCard) {
+		this.remainCard = remainCard;
+	}
 }

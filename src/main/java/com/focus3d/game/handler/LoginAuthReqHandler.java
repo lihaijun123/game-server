@@ -9,7 +9,7 @@ import net.sf.json.JSONObject;
 
 import com.focus3d.game.client.GameClient;
 import com.focus3d.game.constant.MessageType;
-import com.focus3d.game.game.protocal.GameMessage;
+import com.focus3d.game.protocal.GameMessage;
 /**
  * *
  * @author lihaijun

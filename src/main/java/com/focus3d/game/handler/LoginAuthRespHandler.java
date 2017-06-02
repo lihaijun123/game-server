@@ -1,10 +1,11 @@
 package com.focus3d.game.handler;
 
-import java.util.List;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+
+import java.util.List;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -16,6 +17,7 @@ import com.focus3d.game.card.User;
 import com.focus3d.game.card.database.GroupDB;
 import com.focus3d.game.card.database.UserDB;
 import com.focus3d.game.constant.MessageType;
+import com.focus3d.game.handler.logic.card.GetCardLogic;
 import com.focus3d.game.protocal.GameMessage;
 /**
  * 登录验证
@@ -44,6 +46,8 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 				log.info("user:" + user.toString() + " 加入组[" + group.toString() + "]");
 				ctx.writeAndFlush(buildLoginResp(0, user, group));
 				sendSelfInfoToOther(user, group);
+				//测试代码
+				GetCardLogic.getCard(ctx, message);
 			} else {
 				ctx.writeAndFlush(buildLoginResp(-1, null, null));
 			}

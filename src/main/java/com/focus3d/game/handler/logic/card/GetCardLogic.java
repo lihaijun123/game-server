@@ -1,6 +1,5 @@
 package com.focus3d.game.handler.logic.card;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.internal.StringUtil;
 
@@ -27,6 +26,7 @@ import com.focus3d.game.protocal.GameMessage;
  */
 public class GetCardLogic {
 	/**
+	 * 发牌
 	 * *
 	 * @param ctx
 	 * @param message
@@ -35,7 +35,7 @@ public class GetCardLogic {
 		//发牌
 		Group group = GroupDB.select(ctx.channel());
 		List<User> userList = group.getUserList();
-		if(userList.size() == 1){
+		if(userList.size() == 2){
 			String body = String.valueOf(message.getBody());
 			if(!StringUtil.isNullOrEmpty(body)){
 				JSONObject bodyJo = JSONObject.fromObject(body);

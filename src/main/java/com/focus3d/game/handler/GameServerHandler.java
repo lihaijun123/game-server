@@ -5,9 +5,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.internal.StringUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.json.JSONArray;
@@ -16,8 +16,6 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.focus3d.game.card.Card;
-import com.focus3d.game.card.CardManager;
 import com.focus3d.game.card.Group;
 import com.focus3d.game.card.User;
 import com.focus3d.game.card.database.GroupDB;
@@ -57,7 +55,9 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			GameMessage message = (GameMessage)msg;
 			if(message.getHeader().getType() == MessageType.CARD_GET_REQ.getType()){
 				GetCardLogic.getCard(ctx, message);
-			} else if(message.getHeader().getType() == MessageType.CARD_SEND_REQ.getType()){
+			} 
+			else if(message.getHeader().getType() == MessageType.CARD_SEND_REQ.getType())
+			{
 				//打牌
 				String body = String.valueOf(message.getBody());
 				if(!StringUtil.isNullOrEmpty(body)){
@@ -81,7 +81,10 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 						}
 					}
 				}
-			} else if(message.getHeader().getType() == MessageType.USER_ROB_HOST_REQ.getType()){ 
+			} 
+			else if(message.getHeader().getType() == MessageType.USER_ROB_HOST_REQ.getType())
+			{ 
+				//叫地主
 				String body = String.valueOf(message.getBody());
 				if(!StringUtil.isNullOrEmpty(body)){
 					JSONObject bodyJo = JSONObject.fromObject(body);
@@ -89,6 +92,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 					int station = bodyJo.getInt("station");//0-不抢 1-抢
 					Group group = GroupDB.select(ctx.channel());
 					List<User> userList = group.getUserList();
+					
 					//初始化计数器
 					int initCount = 0;
 					for (User user : userList) {
@@ -198,16 +202,29 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 						}
 						if(!StringUtil.isNullOrEmpty(hostUserid)){
 							System.out.println("玩家：" + hostUserid + " 抢得了本轮的地主。");
+							for(User user : userList){
+								GameMessage robHostResp = buildRobHostResp(userId, station, hostUserid);
+								user.getChannel().writeAndFlush(robHostResp);
+							}
 						}
 					} else {
 						System.out.println("还有玩家没有点击是否要地主");
+						for(User user : userList){
+							GameMessage robHostResp = buildRobHostResp(userId, station, "");
+							user.getChannel().writeAndFlush(robHostResp);
+						}
+						//通知下家叫地主
+						User nextUser = nextUser(userId, userList);
+						System.out.println("轮到： " + nextUser.toString() + " 叫地主");
+						GameMessage callHostResp = GetCardLogic.buildCallHostResp(nextUser);
+						nextUser.getChannel().writeAndFlush(callHostResp);
 					}
 				}
 			} else {
 				ctx.fireChannelRead(msg);
 			}
 		}
-
+		
 		@Override
 		public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 			String id = String.valueOf(ctx.channel().id());
@@ -233,5 +250,77 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			message.setBody(jo + "\0");
 			return message;
 		}
+		/**
+		 * 抢地主返回
+		 * *
+		 * @param userId
+		 * @param station
+		 * @param targetUserId
+		 * @return
+		 */
+		private GameMessage buildRobHostResp(String userId, int station, String targetUserId){
+			JSONObject jo = new JSONObject();
+			jo.put("userid", userId);
+			jo.put("station", station);
+			jo.put("targetuserid", targetUserId);
+			GameMessage message = new GameMessage();
+			message.getHeader().setType((byte)MessageType.USER_ROB_HOST_RESP.getType());
+			message.setBody(jo + "\0");
+			return message;
+		}
+		/**
+		 * 下家
+		 * *
+		 * @param userId
+		 * @param userList
+		 * @return
+		 */
+		private User nextUser(String userId, List<User> userList){
+			//通知下家叫地主
+			int nextUserIndex = 0;
+			for(User user : userList){
+				if(userId.equals(user.getId())){
+					int indexOf = userList.indexOf(user);
+					if(indexOf != userList.size() - 1){
+						nextUserIndex = indexOf + 1;
+					}
+					break;
+				}
+			}
+			return userList.get(nextUserIndex);
+		}
+		/**
+		 * 上家
+		 * *
+		 * @param userId
+		 * @param userList
+		 * @return
+		 */
+		private User prevUser(String userId, List<User> userList){
+			//通知下家叫地主
+			int prevUserIndex = 0;
+			for(User user : userList){
+				if(userId.equals(user.getId())){
+					int indexOf = userList.indexOf(user);
+					if(indexOf == 0){
+						prevUserIndex = userList.size() -1;
+					} else {
+						prevUserIndex = indexOf - 1;
+					}
+					break;
+				}
+			}
+			return userList.get(prevUserIndex);
+		}
 		
+		public static void main(String[] arg){
+			List<User> userlist = new ArrayList<User>();
+			userlist.add(new User("1", "test1"));
+			userlist.add(new User("2", "test2"));
+			userlist.add(new User("3", "test3"));
+			userlist.add(new User("4", "test4"));
+			GameServerHandler gameServerHandler = new GameServerHandler();
+			User prevUser = gameServerHandler.prevUser("2", userlist);
+			System.out.println(prevUser);
+		}
 }

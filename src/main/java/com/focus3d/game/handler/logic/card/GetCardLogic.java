@@ -105,7 +105,7 @@ public class GetCardLogic {
 	 * @param user
 	 * @return
 	 */
-	private static GameMessage buildCallHostResp(User user) {
+	public static GameMessage buildCallHostResp(User user) {
 		JSONObject jo = new JSONObject();
 		jo.put("userid", user.getId());
 		GameMessage message = new GameMessage();

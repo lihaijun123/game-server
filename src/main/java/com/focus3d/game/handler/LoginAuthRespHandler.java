@@ -17,7 +17,6 @@ import com.focus3d.game.card.User;
 import com.focus3d.game.card.database.GroupDB;
 import com.focus3d.game.card.database.UserDB;
 import com.focus3d.game.constant.MessageType;
-import com.focus3d.game.handler.logic.card.GetCardLogic;
 import com.focus3d.game.protocal.GameMessage;
 /**
  * 登录验证
@@ -46,8 +45,6 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 				log.info("user:" + user.toString() + " 加入组[" + group.toString() + "]");
 				ctx.writeAndFlush(buildLoginResp(0, user, group));
 				sendSelfInfoToOther(user, group);
-				//测试代码
-				GetCardLogic.getCard(ctx, message);
 			} else {
 				ctx.writeAndFlush(buildLoginResp(-1, null, null));
 			}
@@ -64,6 +61,14 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
 		message.getHeader().setType((byte)MessageType.CONNECT_ACTIVE_RESP.getType());
 		message.setBody(new JSONObject());
 		channel.writeAndFlush(message);
+		//暂时
+		/*User user = UserDB.select("1");
+		if(user != null){
+			user.setChannel(ctx.channel());
+			//加入组
+			Group group = GroupDB.join(user);
+			GetCardLogic.getCard(ctx, null);
+		}*/
 		System.out.println(log);
 	}
 	

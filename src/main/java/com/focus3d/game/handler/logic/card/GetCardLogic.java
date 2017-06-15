@@ -1,7 +1,6 @@
 package com.focus3d.game.handler.logic.card;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.internal.StringUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -35,12 +34,12 @@ public class GetCardLogic {
 		//发牌
 		Group group = GroupDB.select(ctx.channel());
 		List<User> userList = group.getUserList();
-		if(userList.size() == 1){
-			String body = String.valueOf(message.getBody());
+		if(userList.size() >= 3){
+			/*String body = String.valueOf(message.getBody());
 			if(!StringUtil.isNullOrEmpty(body)){
 				JSONObject bodyJo = JSONObject.fromObject(body);
 				
-			}
+			}*/
 			CardManager cardManager = new CardManager();
 			Map<String, Card> shuffleCards = cardManager.ShuffleCards();
 			Card bootomCard = shuffleCards.get(CardManager.PLAYER_KEY_BOTTOM_CARD);
@@ -98,7 +97,6 @@ public class GetCardLogic {
 		message.setBody(jo);
 		return message;
 	}
-	
 	/**
 	 * 随机分配给玩家叫地主
 	 * *

@@ -18,7 +18,7 @@ public class UserDB {
 	private static List<User> data = new ArrayList<User>();
 	
 	static {
-		for(int i = 0; i < 20; i ++){
+		for(int i = 0; i <= 10000; i ++){
 			User user = new User(String.valueOf(i), "user_" + i);
 			data.add(user);
 		}

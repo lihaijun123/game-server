@@ -41,6 +41,7 @@ public class RobHostLogic {
 			boolean isSecondCall = false;
 			//设置玩家是否抢地主标志
 			User currentUser = getUser(currentUserId, userList);
+			System.out.println("玩家：" + currentUserId + " " + (station == 1 ? (currentUser.getCard().isCaller() ? "叫" : "抢") + "地主" : "不要地主"));
 			Integer clickCount = currentUser.getCard().getRobHostClick();
 			if(clickCount == null){
 				currentUser.getCard().setRobHostClick(station);
@@ -89,6 +90,8 @@ public class RobHostLogic {
 							System.out.println("通知叫地主玩家 " + caller + " 再次叫地主");
 							GameMessage callHostResp = GetCardLogic.buildCallHostResp(caller);
 							caller.getChannel().writeAndFlush(callHostResp);
+							//向所有人发
+							notifyAllUserResp(userList, currentUserId, station, hostUserid, isAllClick);
 						} else {
 							//上家抢地主玩家是地主
 							hostUserid = findPrevRobHostUser(currentUserId, userList).getId();
@@ -97,17 +100,11 @@ public class RobHostLogic {
 				}
 				if(!StringUtil.isNullOrEmpty(hostUserid)){
 					System.out.println("玩家：" + hostUserid + " 抢得了本轮的地主。");
-					for(User user : userList){
-						GameMessage robHostResp = buildRobHostResp(currentUserId, station, hostUserid);
-						user.getChannel().writeAndFlush(robHostResp);
-					}
+					notifyAllUserResp(userList, currentUserId, station, hostUserid, isAllClick);
 				}
 			} else {
 				System.out.println("还有玩家没有点击是否要地主");
-				for(User user : userList){
-					GameMessage robHostResp = buildRobHostResp(currentUserId, station, "");
-					user.getChannel().writeAndFlush(robHostResp);
-				}
+				notifyAllUserResp(userList, currentUserId, station, "", isAllClick);
 				//通知下家叫地主
 				User nextUser = nextUser(currentUserId, userList);
 				System.out.println("轮到： " + nextUser.toString() + " 叫地主");
@@ -118,6 +115,13 @@ public class RobHostLogic {
 	
 	}
 	
+	private static void notifyAllUserResp(List<User> userList, String currentUserId, int station, String hostUserid, boolean isAllClick){
+		for(User user : userList){
+			GameMessage robHostResp = buildRobHostResp(currentUserId, station, hostUserid, isAllClick);
+			user.getChannel().writeAndFlush(robHostResp);
+		}
+	}
+	
 	/**
 	 * 抢地主响应
 	 * *
@@ -126,11 +130,12 @@ public class RobHostLogic {
 	 * @param targetUserId
 	 * @return
 	 */
-	private static GameMessage buildRobHostResp(String userId, int station, String targetUserId){
+	private static GameMessage buildRobHostResp(String userId, int station, String targetUserId, boolean isAllClick){
 		JSONObject jo = new JSONObject();
 		jo.put("userid", userId);
 		jo.put("station", station);
 		jo.put("targetuserid", targetUserId);
+		jo.put("allclick", isAllClick ? 1 : 0);
 		GameMessage message = new GameMessage();
 		message.getHeader().setType((byte)MessageType.USER_ROB_HOST_RESP.getType());
 		message.setBody(jo + "\0");
@@ -144,7 +149,7 @@ public class RobHostLogic {
 	 * @param userList
 	 * @return
 	 */
-	private static User nextUser(String userId, List<User> userList){
+	public static User nextUser(String userId, List<User> userList){
 		//通知下家叫地主
 		int nextUserIndex = 0;
 		for(User user : userList){

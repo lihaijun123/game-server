@@ -15,6 +15,7 @@ public class Card {
 
 	private Card bootomCard;//底牌
 	private Integer remainCard;//还剩几张牌
+	private boolean isSend = true;//是否出牌
 	
 	public Card(String data){
 		this.data = data;
@@ -72,4 +73,13 @@ public class Card {
 	public void setRemainCard(Integer remainCard) {
 		this.remainCard = remainCard;
 	}
+
+	public boolean isSend() {
+		return isSend;
+	}
+
+	public void setSend(boolean isSend) {
+		this.isSend = isSend;
+	}
+	
 }

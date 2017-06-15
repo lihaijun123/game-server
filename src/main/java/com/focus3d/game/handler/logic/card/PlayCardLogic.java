@@ -13,7 +13,6 @@ import com.focus3d.game.card.User;
 import com.focus3d.game.card.database.GroupDB;
 import com.focus3d.game.constant.MessageType;
 import com.focus3d.game.protocal.GameMessage;
-import com.sun.corba.se.impl.corba.TCUtility;
 
 /**
  * 打牌逻辑
@@ -49,7 +48,11 @@ public class PlayCardLogic {
 						}
 					}
 					System.out.println("玩家:" + user.getId() + ",收到玩家：" + sendCardUserId + "的牌：" + sendCard);
-					user.getChannel().writeAndFlush(buildCardSendResp(sendCardUserId, user, sendCard, control));
+					//当前玩家
+					User currentUser = RobHostLogic.getUser(sendCardUserId, userList);
+					currentUser.getCard().setSend(StringUtil.isNullOrEmpty(sendCard));
+					User prevSendCardUser = findPrevSendCard(currentUser.getId(), userList);
+					user.getChannel().writeAndFlush(buildCardSendResp(sendCardUserId, user, sendCard, control, prevSendCardUser.getId()));
 				}
 				//给下家发送出牌消息
 				User nextUser = RobHostLogic.nextUser(sendCardUserId, userList);
@@ -67,18 +70,23 @@ public class PlayCardLogic {
 	 * @param card 出牌者出的牌
 	 * @return
 	 */
-	private static GameMessage buildCardSendResp(String userId, User user, String card, int control) {
+	private static GameMessage buildCardSendResp(String userId, User user, String card, int control, String prevSendCardUserId) {
 		JSONObject jo = new JSONObject();
 		jo.put("userid", userId);
 		jo.put("card", card);
 		jo.put("control", control);
 		jo.put("remain", user.getCard().getRemainCard());
+		jo.put("prevuserid", prevSendCardUserId);
 		GameMessage message = new GameMessage();
 		message.getHeader().setType((byte)MessageType.CARD_SEND_RESP.getType());
 		message.setBody(jo + "\0");
 		return message;
 	}
-	
+	/**
+	 * 
+	 * *
+	 * @return
+	 */
 	private static GameMessage buildNexUserSendCardResp() {
 		JSONObject jo = new JSONObject();
 		GameMessage message = new GameMessage();
@@ -86,4 +94,25 @@ public class PlayCardLogic {
 		message.setBody(jo + "\0");
 		return message;
 	}
+	
+	/**
+	 * 找出前一个出牌的玩家
+	 * *
+	 * @param currentUserId
+	 * @param userList
+	 * @return
+	 */
+	private static User findPrevSendCard(String currentUserId, List<User> userList){
+		User prevUser = RobHostLogic.prevUser(currentUserId, userList);
+		String robHostUserId = "";
+		boolean isSend = prevUser.getCard().isSend();
+		if(isSend){
+			robHostUserId = prevUser.getId();
+		}
+		if(StringUtil.isNullOrEmpty(robHostUserId)){
+			prevUser = findPrevSendCard(prevUser.getId(), userList);
+		}
+		return prevUser;
+	}
+	
 }

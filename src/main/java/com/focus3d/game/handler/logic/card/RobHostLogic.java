@@ -77,7 +77,7 @@ public class RobHostLogic {
 					hostUserid = findPrevRobHostUser(currentUserId, userList).getId();
 				} else {
 					if(isSecondCall){
-						if(clickCount == 1){
+						if(clickCount == 1 && station == 1){
 							System.out.println("叫地主玩家 " + currentUser + " 第二次抢地主。");
 							hostUserid = currentUserId;
 						} else {
@@ -170,7 +170,7 @@ public class RobHostLogic {
 	 * @param userList
 	 * @return
 	 */
-	private static User prevUser(String userId, List<User> userList){
+	public static User prevUser(String userId, List<User> userList){
 		//通知下家叫地主
 		int prevUserIndex = 0;
 		for(User user : userList){
@@ -193,7 +193,7 @@ public class RobHostLogic {
 	 * @param userList
 	 * @return
 	 */
-	private static User getUser(String userId, List<User> userList){
+	public static User getUser(String userId, List<User> userList){
 		for(User user : userList){
 			if(userId.equals(user.getId())){
 				return user;

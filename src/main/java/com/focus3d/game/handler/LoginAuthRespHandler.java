@@ -17,6 +17,7 @@ import com.focus3d.game.card.User;
 import com.focus3d.game.card.database.GroupDB;
 import com.focus3d.game.card.database.UserDB;
 import com.focus3d.game.constant.MessageType;
+import com.focus3d.game.handler.logic.card.GetCardLogic;
 import com.focus3d.game.protocal.GameMessage;
 /**
  * 登录验证

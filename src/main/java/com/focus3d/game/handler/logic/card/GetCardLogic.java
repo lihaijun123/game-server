@@ -34,7 +34,7 @@ public class GetCardLogic {
 		//发牌
 		Group group = GroupDB.select(ctx.channel());
 		List<User> userList = group.getUserList();
-		if(userList.size() >= 3){
+		if(userList.size() >= 1){
 			/*String body = String.valueOf(message.getBody());
 			if(!StringUtil.isNullOrEmpty(body)){
 				JSONObject bodyJo = JSONObject.fromObject(body);

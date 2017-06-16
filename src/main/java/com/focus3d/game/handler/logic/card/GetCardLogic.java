@@ -94,7 +94,7 @@ public class GetCardLogic {
 		}
 		GameMessage message = new GameMessage();
 		message.getHeader().setType((byte)messageType.getType());
-		message.setBody(jo);
+		message.setBody(jo + "\0");
 		return message;
 	}
 	/**
@@ -108,7 +108,7 @@ public class GetCardLogic {
 		jo.put("userid", user.getId());
 		GameMessage message = new GameMessage();
 		message.getHeader().setType((byte)MessageType.USER_ROB_HOST_CALL_RESP.getType());
-		message.setBody(jo);
+		message.setBody(jo + "\0");
 		return message;
 	}
 }

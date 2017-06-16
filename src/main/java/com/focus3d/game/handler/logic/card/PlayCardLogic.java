@@ -80,7 +80,7 @@ public class PlayCardLogic {
 		jo.put("userid", userId);
 		jo.put("card", card);
 		jo.put("control", control);
-		jo.put("remain", remain);
+		jo.put("remain", String.valueOf(remain));
 		jo.put("prevuserid", prevSendCardUserId);
 		GameMessage message = new GameMessage();
 		message.getHeader().setType((byte)MessageType.CARD_SEND_RESP.getType());

@@ -59,6 +59,13 @@ public class RobHostLogic {
 					break;
 				}
 			}
+			boolean isClick = false;
+			for (User user : userList) {
+				if(user.getCard().getRobHostClick() != null){
+					isClick = true;
+					break;
+				}
+			}
 			if(isAllClick){
 				String hostUserid = "";
 				//初始化计数器
@@ -91,7 +98,7 @@ public class RobHostLogic {
 							GameMessage callHostResp = GetCardLogic.buildCallHostResp(caller);
 							caller.getChannel().writeAndFlush(callHostResp);
 							//向所有人发
-							notifyAllUserResp(userList, currentUserId, station, hostUserid, isAllClick);
+							notifyAllUserResp(userList, currentUserId, station, hostUserid, isClick);
 						} else {
 							//上家抢地主玩家是地主
 							hostUserid = findPrevRobHostUser(currentUserId, userList).getId();
@@ -100,11 +107,11 @@ public class RobHostLogic {
 				}
 				if(!StringUtil.isNullOrEmpty(hostUserid)){
 					System.out.println("玩家：" + hostUserid + " 抢得了本轮的地主。");
-					notifyAllUserResp(userList, currentUserId, station, hostUserid, isAllClick);
+					notifyAllUserResp(userList, currentUserId, station, hostUserid, isClick);
 				}
 			} else {
 				System.out.println("还有玩家没有点击是否要地主");
-				notifyAllUserResp(userList, currentUserId, station, "", isAllClick);
+				notifyAllUserResp(userList, currentUserId, station, "", isClick);
 				//通知下家叫地主
 				User nextUser = nextUser(currentUserId, userList);
 				System.out.println("轮到： " + nextUser.toString() + " 叫地主");
@@ -115,9 +122,9 @@ public class RobHostLogic {
 	
 	}
 	
-	private static void notifyAllUserResp(List<User> userList, String currentUserId, int station, String hostUserid, boolean isAllClick){
+	private static void notifyAllUserResp(List<User> userList, String currentUserId, int station, String hostUserid, boolean isClick){
 		for(User user : userList){
-			GameMessage robHostResp = buildRobHostResp(currentUserId, station, hostUserid, isAllClick);
+			GameMessage robHostResp = buildRobHostResp(currentUserId, station, hostUserid, isClick);
 			user.getChannel().writeAndFlush(robHostResp);
 		}
 	}
@@ -130,12 +137,12 @@ public class RobHostLogic {
 	 * @param targetUserId
 	 * @return
 	 */
-	private static GameMessage buildRobHostResp(String userId, int station, String targetUserId, boolean isAllClick){
+	private static GameMessage buildRobHostResp(String userId, int station, String targetUserId, boolean isClick){
 		JSONObject jo = new JSONObject();
 		jo.put("userid", userId);
 		jo.put("station", station);
 		jo.put("targetuserid", targetUserId);
-		jo.put("allclick", isAllClick ? 1 : 0);
+		jo.put("isclick", isClick ? 1 : 0);
 		GameMessage message = new GameMessage();
 		message.getHeader().setType((byte)MessageType.USER_ROB_HOST_RESP.getType());
 		message.setBody(jo + "\0");

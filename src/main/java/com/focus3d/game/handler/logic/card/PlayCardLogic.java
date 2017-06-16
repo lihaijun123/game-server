@@ -51,10 +51,13 @@ public class PlayCardLogic {
 						Integer remainCard = user.getCard().getRemainCard();
 						if(remainCard > 0){
 							user.getCard().setRemainCard(remainCard - (StringUtil.isNullOrEmpty(sendCard) ? 0 : JSONArray.fromObject(sendCard).size()));
+							break;
 						}
 					}
+				}
+				for (User user : userList) {
 					System.out.println("玩家:" + user.getId() + ",收到玩家：" + sendCardUserId + "的牌：" + sendCard);
-					user.getChannel().writeAndFlush(buildCardSendResp(sendCardUserId, user, sendCard, control, prevSendCardUser.getId()));
+					user.getChannel().writeAndFlush(buildCardSendResp(sendCardUserId, currentUser.getCard().getRemainCard(), sendCard, control, prevSendCardUser.getId()));
 				}
 				//给下家发送出牌消息
 				User nextUser = RobHostLogic.nextUser(sendCardUserId, userList);
@@ -72,12 +75,12 @@ public class PlayCardLogic {
 	 * @param card 出牌者出的牌
 	 * @return
 	 */
-	private static GameMessage buildCardSendResp(String userId, User user, String card, int control, String prevSendCardUserId) {
+	private static GameMessage buildCardSendResp(String userId, int remain, String card, int control, String prevSendCardUserId) {
 		JSONObject jo = new JSONObject();
 		jo.put("userid", userId);
 		jo.put("card", card);
 		jo.put("control", control);
-		jo.put("remain", user.getCard().getRemainCard());
+		jo.put("remain", remain);
 		jo.put("prevuserid", prevSendCardUserId);
 		GameMessage message = new GameMessage();
 		message.getHeader().setType((byte)MessageType.CARD_SEND_RESP.getType());

@@ -107,6 +107,11 @@ public class RobHostLogic {
 				}
 				if(!StringUtil.isNullOrEmpty(hostUserid)){
 					System.out.println("玩家：" + hostUserid + " 抢得了本轮的地主。");
+					//把底牌给地主玩家
+					User hostUser = getUser(hostUserid, userList);
+					Integer hostUserCardNum = hostUser.getCard().getRemainCard();
+					Integer hostUserBtCardNum = hostUser.getCard().getBootomCard().getData().split(",").length;
+					hostUser.getCard().setRemainCard(hostUserCardNum + hostUserBtCardNum);
 					notifyAllUserResp(userList, currentUserId, station, hostUserid, isCall);
 				}
 			} else {

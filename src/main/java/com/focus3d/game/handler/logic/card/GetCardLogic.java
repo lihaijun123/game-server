@@ -62,6 +62,7 @@ public class GetCardLogic {
 				Card card = shuffleCards.get(CardManager.PLAYER_KEY_PREFIX + (i + 1));
 				user.setCard(card);
 				card.setBootomCard(bootomCard);
+				//手上牌张数
 				card.setRemainCard(card.getData().split(",").length);
 			}
 			//发牌

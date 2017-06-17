@@ -19,6 +19,7 @@ public enum MessageType {
 	CARD_SEND_RESP(13, "玩家出牌响应消息"),
 	CARD_PUSH_RESP(14, "玩家满3位推牌响应消息"),
 	CARD_NEXT_SEND_RESP(15, "通知下个玩家出牌"),
+	CARD_SEND_OVER(16, "游戏结束"),
 	
 	USER_JOIN_RESP(21, "玩家进入加入游戏响应消息"),
 	USER_ROB_HOST_REQ(22, "玩家抢地主请求消息"),

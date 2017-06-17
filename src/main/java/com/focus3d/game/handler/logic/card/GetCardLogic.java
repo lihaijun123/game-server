@@ -41,6 +41,7 @@ public class GetCardLogic {
 		if(!StringUtil.isNullOrEmpty(body)){
 			JSONObject bodyJo = JSONObject.fromObject(body);
 			String currentUserId = bodyJo.getString("userid");
+			System.out.println("玩家：" + currentUserId + " 点击准备开始");
 			User currentUser = RobHostLogic.getUser(currentUserId, userList);
 			currentUser.getCard().setReady(true);
 			ctx.writeAndFlush(buildCardGetResp(MessageType.CARD_GET_RESP, null, null, null));
@@ -50,10 +51,12 @@ public class GetCardLogic {
 			Card card = user.getCard();
 			if(!card.isReady()){
 				isAllReady = false;
+				System.out.println("等待下家：" + user.getId() + " 准备开始");
 				break;
 			}
 		}
 		if(userList.size() == PLAYER_NUM && isAllReady){
+			System.out.print(PLAYER_NUM + "个玩家都已经准备开始了，准备发牌：");
 			CardManager cardManager = new CardManager();
 			Map<String, Card> shuffleCards = cardManager.ShuffleCards();
 			Card bootomCard = shuffleCards.get(CardManager.PLAYER_KEY_BOTTOM_CARD);

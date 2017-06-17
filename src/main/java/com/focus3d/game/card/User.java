@@ -14,7 +14,7 @@ public class User {
 	private Channel channel;
 	private Integer sex = 1;//0-女 1-男
 	private Integer seatNo;//座位号
-	private Card card;
+	private Card card = new Card("");
 	public User(String id, String name){
 		this.id = id;
 		this.name = name;

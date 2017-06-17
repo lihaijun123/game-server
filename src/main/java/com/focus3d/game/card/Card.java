@@ -8,6 +8,7 @@ package com.focus3d.game.card;
 public class Card {
 
 	private String data;
+	private boolean isReady = false;//是否准备开始
 	private boolean isCaller = false;//是否分配叫地主的玩家
 	//private boolean isSecondClick = false;//如果是叫地主玩家，是否第二次点击
 	private boolean isRobHost = false;//是否抢得了地主
@@ -81,5 +82,12 @@ public class Card {
 	public void setSend(boolean isSend) {
 		this.isSend = isSend;
 	}
-	
+
+	public boolean isReady() {
+		return isReady;
+	}
+
+	public void setReady(boolean isReady) {
+		this.isReady = isReady;
+	}
 }

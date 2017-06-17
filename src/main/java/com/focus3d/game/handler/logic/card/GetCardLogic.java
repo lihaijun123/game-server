@@ -1,6 +1,7 @@
 package com.focus3d.game.handler.logic.card;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.internal.StringUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,8 @@ import com.focus3d.game.protocal.GameMessage;
  *
  */
 public class GetCardLogic {
+	//游戏玩家个数
+	public static final int PLAYER_NUM = 2;
 	/**
 	 * 发牌
 	 * *
@@ -34,12 +37,23 @@ public class GetCardLogic {
 		//发牌
 		Group group = GroupDB.select(ctx.channel());
 		List<User> userList = group.getUserList();
-		if(userList.size() >= 2){
-			/*String body = String.valueOf(message.getBody());
-			if(!StringUtil.isNullOrEmpty(body)){
-				JSONObject bodyJo = JSONObject.fromObject(body);
-				
-			}*/
+		String body = String.valueOf(message.getBody());
+		if(!StringUtil.isNullOrEmpty(body)){
+			JSONObject bodyJo = JSONObject.fromObject(body);
+			String currentUserId = bodyJo.getString("userid");
+			User currentUser = RobHostLogic.getUser(currentUserId, userList);
+			currentUser.getCard().setReady(true);
+			ctx.writeAndFlush(buildCardGetResp(MessageType.CARD_GET_RESP, null, null, null));
+		}
+		boolean isAllReady = true;
+		for (User user : userList) {
+			Card card = user.getCard();
+			if(!card.isReady()){
+				isAllReady = false;
+				break;
+			}
+		}
+		if(userList.size() == PLAYER_NUM && isAllReady){
 			CardManager cardManager = new CardManager();
 			Map<String, Card> shuffleCards = cardManager.ShuffleCards();
 			Card bootomCard = shuffleCards.get(CardManager.PLAYER_KEY_BOTTOM_CARD);
@@ -50,6 +64,7 @@ public class GetCardLogic {
 				card.setBootomCard(bootomCard);
 				card.setRemainCard(card.getData().split(",").length);
 			}
+			//发牌
 			for(User user : userList){
 				GameMessage cardGetResp = buildCardGetResp(MessageType.CARD_PUSH_RESP, user, userList, group);
 				user.getChannel().writeAndFlush(cardGetResp);
@@ -61,8 +76,7 @@ public class GetCardLogic {
 			GameMessage cardGetResp = buildCallHostResp(callHostUser);
 			callHostUser.getChannel().writeAndFlush(cardGetResp);
 		} else {
-			System.out.println("组[" + group.getId() + "]成员数：" + userList.size() + " 小于3，不可以发牌");
-			ctx.writeAndFlush(buildCardGetResp(MessageType.CARD_GET_RESP, null, null, null));
+			System.out.println("组[" + group.getId() + "]成员数：" + userList.size() + " 小于系统设定的玩家个数 " + PLAYER_NUM + "，不可以发牌");
 		}
 	}
 	

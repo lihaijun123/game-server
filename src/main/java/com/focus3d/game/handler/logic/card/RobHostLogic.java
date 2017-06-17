@@ -145,9 +145,9 @@ public class RobHostLogic {
 	private static GameMessage buildRobHostResp(String userId, int station, String targetUserId, boolean isCall){
 		JSONObject jo = new JSONObject();
 		jo.put("userid", userId);
-		jo.put("station", station);
+		jo.put("station", String.valueOf(station));
 		jo.put("targetuserid", targetUserId);
-		jo.put("iscall", isCall ? 1 : 0);
+		jo.put("iscall", isCall ? "1" : "0");
 		GameMessage message = new GameMessage();
 		message.getHeader().setType((byte)MessageType.USER_ROB_HOST_RESP.getType());
 		message.setBody(jo + "\0");
